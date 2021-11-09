@@ -184,15 +184,21 @@ sum_pef_tp <- function(data, ...,
                         100)
     } %>%
     {
+      if (("id_partida_generica" %in% names(.)))
+        dplyr::mutate(.,
+                      id_partida_generica = as.numeric(substr(id_partida_generica, 0, 3)) *
+                        10)
+      else
+        .
+    } %>%
+    {
       if (!("id_partida_generica" %in% names(.)) &
           ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_partida_generica = as.numeric(substr(id_objeto_del_gasto, 0, 3)) *
                         10)
       else
-        dplyr::mutate(.,
-                      id_partida_generica = as.numeric(substr(id_partida_generica, 0, 3)) *
-                        10)
+        .
     } %>%
     {
       if (("id_objeto_del_gasto" %in% names(.)))
@@ -210,7 +216,8 @@ sum_pef_tp <- function(data, ...,
         .
     } %>%
     {
-      if (!("desc_objeto_del_gasto" %in% names(.)))
+      if (!("desc_objeto_del_gasto" %in% names(.)) &
+          ("desc_partida_especifica" %in% names(.)))
         dplyr::mutate(.,
                       desc_objeto_del_gasto = desc_partida_especifica)
       else
