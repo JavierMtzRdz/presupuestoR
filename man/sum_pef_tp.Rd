@@ -4,7 +4,7 @@
 \alias{sum_pef_tp}
 \title{Agrupación del presupuesto}
 \usage{
-sum_pef_tp(data, ...)
+sum_pef_tp(data, ..., periodo_col = NA, keep_mensual = T)
 }
 \arguments{
 \item{data}{data frame con la estructura de los archivos sobre presupuesto

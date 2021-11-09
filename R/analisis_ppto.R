@@ -117,7 +117,9 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 #' @return dataframe colapsado por las variables indicadas. En caso de no
 #' indicarse ninguna variable, sólo se colapsará por año fiscal.
 #' @export
-sum_pef_tp <- function(data, ...) {
+sum_pef_tp <- function(data, ...,
+                       periodo_col = NA,
+                       keep_mensual = T) {
 
   data %>%
     janitor::clean_names() %>%
@@ -129,14 +131,39 @@ sum_pef_tp <- function(data, ...) {
         .
     } %>%
     {
-      if (!("periodo" %in% names(.)))
+      if (!is.na(periodo_col) &
+          !("periodo" %in% names(.)))
         dplyr::mutate(.,
-                      periodo = as.character(ciclo))
+                      periodo = periodo_col)
       else
         .
     } %>%
     {
-      if (!("id_capitulo" %in% names(.)))
+      if ("ciclo" %in% names(.))
+        dplyr::mutate(.,
+                      ciclo = as.numeric(ciclo))
+      else
+        .
+    } %>%
+    {
+      if (!("periodo" %in% names(.)) &
+          ("ciclo" %in% names(.)))
+        dplyr::mutate(.,
+                      periodo = as.numeric(ciclo))
+      else
+        .
+    } %>%
+    {
+      if (!("periodo" %in% names(.)) &
+          !("ciclo" %in% names(.)))
+        dplyr::mutate(.,
+                      periodo = NA)
+      else
+        .
+    } %>%
+    {
+      if (!("id_capitulo" %in% names(.)) &
+          ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_capitulo = as.numeric(substr(id_objeto_del_gasto, 0, 1)) *
                         1000)
@@ -146,7 +173,8 @@ sum_pef_tp <- function(data, ...) {
                         1000)
     } %>%
     {
-      if (!("id_concepto" %in% names(.)))
+      if (!("id_concepto" %in% names(.)) &
+          ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_concepto = as.numeric(substr(id_objeto_del_gasto, 0, 2)) *
                         100)
@@ -156,7 +184,8 @@ sum_pef_tp <- function(data, ...) {
                         100)
     } %>%
     {
-      if (!("id_partida_generica" %in% names(.)))
+      if (!("id_partida_generica" %in% names(.)) &
+          ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_partida_generica = as.numeric(substr(id_objeto_del_gasto, 0, 3)) *
                         10)
@@ -166,20 +195,19 @@ sum_pef_tp <- function(data, ...) {
                         10)
     } %>%
     {
-      if (!("id_partida_generica" %in% names(.)))
+      if (("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
-                      id_partida_generica = as.numeric(substr(id_objeto_del_gasto, 0, 4)))
+                      id_objeto_del_gasto = as.numeric(id_objeto_del_gasto))
       else
-        dplyr::mutate(.,
-                      id_partida_generica = as.numeric(substr(id_partida_generica, 0, 4)))
+        .
     } %>%
     {
-      if (!("id_objeto_del_gasto" %in% names(.)))
+      if (!("id_objeto_del_gasto" %in% names(.)) &
+          ("id_partida_especifica" %in% names(.)))
         dplyr::mutate(.,
                       id_objeto_del_gasto = as.numeric(id_partida_especifica))
       else
-        dplyr::mutate(.,
-                      id_objeto_del_gasto = as.numeric(id_objeto_del_gasto))
+        .
     } %>%
     {
       if (!("desc_objeto_del_gasto" %in% names(.)))
@@ -194,7 +222,6 @@ sum_pef_tp <- function(data, ...) {
       else
         .
     } %>%
-    dplyr::mutate(ciclo = as.numeric(ciclo)) %>%
     {
       if (!("tipo_de_gasto" %in% names(.)) &
           ("id_ramo" %in% names(.) &
@@ -226,7 +253,13 @@ sum_pef_tp <- function(data, ...) {
       } else
         .
     } %>%
-    # dplyr::select(-dplyr::contains("mensual")) %>%
+    {
+      if (keep_mensual)
+        .
+      else
+        dplyr::select(.,
+                      -dplyr::contains("mensual"))
+    } %>%
     dplyr::rename(
       proyecto = dplyr::contains(c("proyec")),
       aprobado = dplyr::contains(c("aprobado")),
