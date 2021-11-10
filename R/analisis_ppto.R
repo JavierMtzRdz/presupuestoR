@@ -23,8 +23,6 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 
     return(monto)
 
-    break
-
   }
 
   year_out <- as.numeric(year_out)
@@ -34,8 +32,6 @@ deflactar_tp <- function(monto, year_monto, year_out) {
     warning("year_out supera el rango de años disponible. La cifra no fue deflactada.")
 
     return(monto)
-
-    break
 
   }
 
