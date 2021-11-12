@@ -4,7 +4,7 @@
 \alias{deflactar_inpc}
 \title{Deflactar montos INEGI}
 \usage{
-deflactar_inpc(monto, year_monto, year_out, mes = 12)
+deflactar_inpc(monto, year_monto, year_out, mes = 12, acumulado = T)
 }
 \arguments{
 \item{monto}{monto que se quiere deflactar}
