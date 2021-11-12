@@ -12,13 +12,13 @@ u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
 #' @importFrom magrittr %>%
 #' @return regresa un vector de los montos deflactados
 #' @export
-deflactar_inpc <- function(monto, year_monto, year_out, mes = 12) {
+deflactar_inpc <- function(monto, year_monto, year_out, mes = 12, acumulado = T) {
 
-  if (!exists("inpc") ||
-      !(c("fecha") %in% colnames(inpc)) ||
-      !(c("mes") %in% colnames(inpc)) ||
-      !(c("year") %in% colnames(inpc)) ||
-      !(c("inpc") %in% colnames(inpc))) {
+  if (!exists("inpc_bd") ||
+      !(c("fecha") %in% colnames(inpc_bd)) ||
+      !(c("mes") %in% colnames(inpc_bd)) ||
+      !(c("year") %in% colnames(inpc_bd)) ||
+      !(c("inpc") %in% colnames(inpc_bd))) {
 
     temp <- tempfile(fileext = ".xls")
 
@@ -26,7 +26,7 @@ deflactar_inpc <- function(monto, year_monto, year_out, mes = 12) {
 
     download.file(inpc_ur, destfile = temp, mode = 'wb')
 
-    inpc <<- XML::htmlParse(temp) %>%
+    inpc_bd <<- XML::htmlParse(temp) %>%
       XML::getNodeSet('//table') %>%
       .[[6]] %>%
       XML::readHTMLTable() %>%
@@ -34,24 +34,39 @@ deflactar_inpc <- function(monto, year_monto, year_out, mes = 12) {
       janitor::clean_names() %>%
       tidyr::separate(date, c("mes", "year")) %>%
       dplyr::transmute(fecha = paste0(mes, "/", year),
-                       mes,
-                       year,
+                       mes = as.numeric(mes),
+                       year = as.numeric(year),
                        inpc = as.numeric(sp1))
 
   }
 
-  mes <- as.numeric(mes)
+  mes_dato <- as.numeric(mes)
 
-  fecha_monto <- paste0(mes, "/", year_monto)
+  fecha_monto <- paste0(mes_dato, "/", year_monto)
 
-  fecha_out <- paste0(mes, "/", year_out)
+  fecha_out <- paste0(mes_dato, "/", year_out)
 
-  if (!all(c(fecha_monto, fecha_out) %in% inpc$fecha)) {
+  if (!all(c(fecha_monto, fecha_out) %in% inpc_bd$fecha)) {
     warning("Fechas no disponibles")
 
     return(monto)
   }
 
+  if(acumulado) {
+
+    inpc <- inpc_bd %>%
+      dplyr::filter(mes <= mes_dato) %>%
+      dplyr::group_by(year) %>%
+      dplyr::summarise(inpc = mean(inpc)) %>%
+      dplyr::rename(fecha = year)
+
+    fecha_out <- year_out
+
+    fecha_monto <- year_monto
+
+  } else {
+    inpc <- inpc_bd
+  }
 
   deflactor_out <- try(purrr::map_dbl(fecha_out,
                                       function(x) as.numeric(inpc[x == inpc$fecha,]$inpc)),
