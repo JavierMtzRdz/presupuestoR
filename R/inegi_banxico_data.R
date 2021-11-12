@@ -26,7 +26,7 @@ deflactar_inpc <- function(monto, year_monto, year_out, mes = 12) {
 
     download.file(inpc_ur, destfile = temp, mode = 'wb')
 
-    inpc <<- htmlParse(temp) %>%
+    inpc <<- XML::htmlParse(temp) %>%
       XML::getNodeSet('//table') %>%
       .[[6]] %>%
       XML::readHTMLTable() %>%
