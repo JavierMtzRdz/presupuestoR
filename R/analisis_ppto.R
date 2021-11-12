@@ -15,29 +15,17 @@ u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
 #' @export
 deflactar_tp <- function(monto, year_monto, year_out) {
 
-  year_mont <- as.numeric(year_monto)
-
-  if (any(year_monto > 2030) |
-      any(year_monto < 1994)) {
-    warning("year_monto supera el rango de años disponible. La cifra no fue deflactada.")
-
-    return(monto)
-
-  }
+  year_monto <- as.numeric(year_monto)
 
   year_out <- as.numeric(year_out)
 
-  if (any(year_out > 2030) |
-      any(year_out < 1994)) {
-    warning("year_out supera el rango de años disponible. La cifra no fue deflactada.")
+  monto <- as.numeric(monto)
 
-    return(monto)
-
-  }
 
   if (!exists("deflactor") ||
       !(c("year") %in% colnames(deflactor)) ||
       !(c("deflactor_year") %in% colnames(deflactor))) {
+
     temp <- tempfile(fileext = ".xlsx")
 
     dataURL <-
@@ -55,13 +43,24 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 
   }
 
+
+  if (!all(c(year_monto, year_out) %in% deflactor$year)) {
+    warning("Año no incluido supera el rango de años disponible. La cifra no fue deflactada.")
+
+    return(monto)
+
+  }
+
   deflactor_out <- try(purrr::map_dbl(year_out,
                                       function(x)
                                         deflactor[deflactor$year %in% as.numeric(x),]$deflactor_year),
                        silent = T)
 
   if (class(deflactor_out) == "try-error") {
-    deflactor_out <- 1
+
+    warning("Error en el año del monto deflactado. La cifra no fue deflactada.")
+
+    return(monto)
   }
 
   deflactor_monto <- try(purrr::map_dbl(year_monto,
@@ -70,7 +69,9 @@ deflactar_tp <- function(monto, year_monto, year_out) {
                          silent = T)
 
   if (class(deflactor_monto) == "try-error") {
-    deflactor_monto <- 1
+    warning("Error en el año al que se va a deflactar. La cifra no fue deflactada.")
+
+    return(monto)
   }
 
   monto_deflactado <- (monto * deflactor_out) / deflactor_monto
