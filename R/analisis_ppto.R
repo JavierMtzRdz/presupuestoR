@@ -412,7 +412,7 @@ bind_pef_tp_wide <- function(lista_df, ...) {
 #' categoría del gasto debe ser neteada.
 #' @export
 netear_tp <- function(data, ..., keep_mensual = T) {
-  data %>%
+  data <- data %>%
     janitor::clean_names() %>%
     {
       if (keep_mensual)
@@ -441,7 +441,9 @@ netear_tp <- function(data, ..., keep_mensual = T) {
       modificado = dplyr::contains("modificado"),
       pagado = dplyr::contains("pagado"),
       ejercido = dplyr::contains(c("ejercido", "ejercicio"))
-    ) %>%
+    )
+
+  data %>%
     {
       if ("id_objeto_del_gasto" %in% names(.)) {
         mutate(
