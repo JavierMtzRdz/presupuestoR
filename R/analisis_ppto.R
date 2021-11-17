@@ -158,28 +158,31 @@ sum_pef_tp <- function(data, ...,
       else
         .
     } %>%
+    {if (("id_capitulo" %in% names(.)))
+        dplyr::mutate(.,
+                      id_capitulo = as.numeric(substr(id_capitulo, 0, 1)) *
+                        1000)
+      else . } %>%
     {
       if (!("id_capitulo" %in% names(.)) &
           ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_capitulo = as.numeric(substr(id_objeto_del_gasto, 0, 1)) *
                         1000)
-      else
+      else . } %>%
+    {
+      if (("id_concepto" %in% names(.)) )
         dplyr::mutate(.,
-                      id_capitulo = as.numeric(substr(id_capitulo, 0, 1)) *
-                        1000)
-    } %>%
+                      id_concepto = as.numeric(substr(id_concepto, 0, 2)) *
+                        100)
+      else . } %>%
     {
       if (!("id_concepto" %in% names(.)) &
           ("id_objeto_del_gasto" %in% names(.)))
         dplyr::mutate(.,
                       id_concepto = as.numeric(substr(id_objeto_del_gasto, 0, 2)) *
                         100)
-      else
-        dplyr::mutate(.,
-                      id_concepto = as.numeric(substr(id_concepto, 0, 2)) *
-                        100)
-    } %>%
+      else . } %>%
     {
       if (("id_partida_generica" %in% names(.)))
         dplyr::mutate(.,
