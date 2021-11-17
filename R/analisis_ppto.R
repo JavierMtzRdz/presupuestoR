@@ -247,6 +247,13 @@ sum_pef_tp <- function(data, ...,
     } %>%
     dplyr::group_by(..., periodo) %>%
     {
+      if (keep_mensual)
+        .
+      else
+        dplyr::select(.,
+                      -dplyr::contains("mensual"))
+    } %>%
+    {
       if ("monto_aprobado_mensual" %in% names(.)) {
         dplyr::rename(.,
                monto_aprob_mes = monto_aprobado_mensual)
@@ -259,13 +266,6 @@ sum_pef_tp <- function(data, ...,
                monto_modif_mes = monto_modificado_mensual)
       } else
         .
-    } %>%
-    {
-      if (keep_mensual)
-        .
-      else
-        dplyr::select(.,
-                      -dplyr::contains("mensual"))
     } %>%
     dplyr::rename(
       proyecto = dplyr::contains(c("proyec")),
@@ -411,9 +411,37 @@ bind_pef_tp_wide <- function(lista_df, ...) {
 #' @return dataframe cuya descripción de ramo indica los casos en que esa
 #' categoría del gasto debe ser neteada.
 #' @export
-netear_tp <- function(data, ...) {
+netear_tp <- function(data, ..., keep_mensual = T) {
   data %>%
     janitor::clean_names() %>%
+    {
+      if (keep_mensual)
+        .
+      else
+        dplyr::select(.,
+                      -dplyr::contains("mensual"))
+    } %>%
+    {
+      if ("monto_aprobado_mensual" %in% names(.)) {
+        dplyr::rename(.,
+                      monto_aprob_mes = monto_aprobado_mensual)
+      } else
+        .
+    } %>%
+    {
+      if ("monto_modificado_mensual" %in% names(.)) {
+        dplyr::rename(.,
+                      monto_modif_mes = monto_modificado_mensual)
+      } else
+        .
+    } %>%
+    dplyr::rename(
+      proyecto = dplyr::contains(c("proyec")),
+      aprobado = dplyr::contains(c("aprobado")),
+      modificado = dplyr::contains("modificado"),
+      pagado = dplyr::contains("pagado"),
+      ejercido = dplyr::contains(c("ejercido", "ejercicio"))
+    ) %>%
     {
       if ("id_objeto_del_gasto" %in% names(.)) {
         mutate(
