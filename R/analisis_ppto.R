@@ -558,6 +558,15 @@ negative_neteo_tp <- function(data) {
         .
     } %>%
     {
+      if ("proyecto" %in% names(.)) {
+        dplyr::mutate(.,
+                      proyecto = ifelse(stringr::str_detect(desc_ramo, "Neteo"),
+                                        -proyecto,
+                                        proyecto))
+      } else
+        .
+    } %>%
+    {
       if ("monto_aprob_mes" %in% names(.)) {
         dplyr::mutate(.,
                monto_aprob_mes = ifelse(
