@@ -4,7 +4,7 @@
 \alias{netear_tp}
 \title{Netear}
 \usage{
-netear_tp(data, ...)
+netear_tp(data, ..., keep_mensual = T)
 }
 \arguments{
 \item{data}{dataframe con la estructura de los datos abiertos de

@@ -17,10 +17,8 @@ Imports:
     readxl,
     janitor,
     purrr,
-    rlang,
     XML
 Suggests:
     magrittr,
-    dplyr,
-    ggplot2
+    dplyr
 RoxygenNote: 7.1.2
