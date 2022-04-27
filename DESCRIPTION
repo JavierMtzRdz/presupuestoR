@@ -17,7 +17,8 @@ Imports:
     readxl,
     janitor,
     purrr,
-    XML
+    XML,
+    rlang
 Suggests:
     magrittr,
     dplyr
