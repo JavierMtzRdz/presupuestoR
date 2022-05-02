@@ -230,12 +230,12 @@ sum_pef_tp <- function(data, ...,
         .
     } %>%
     {
-      if (!("tipo_de_gasto" %in% names(.)) &
+      if (!("tipo_programable" %in% names(.)) &
           ("id_ramo" %in% names(.) &
            "id_capitulo" %in% names(.))) {
         dplyr::mutate(
           .,
-          tipo_de_gasto = dplyr::case_when(
+          tipo_programable = dplyr::case_when(
             id_ramo %in% c(24, 28, 30, 34) ~ "No programable",
             id_ramo %in% c(52, 53) &
               id_capitulo == 9000 ~ "No programable",
@@ -883,5 +883,60 @@ desc_ramo_to_abr_ramo <- function(desc_ramo) {
     T ~ NA_character_
   )
 }
+
+
+#' Generar colúmna con clasificación de programable
+#'
+#' @param .x base de datos de presupuesto
+#'
+#' @return una base de datos de presupuesto con clasificación del gasto
+#' programable y no programable
+#' @export
+gen_tipo_programable <- function(.x) {
+  dplyr::mutate(.x, 
+    tipo_programable = dplyr::case_when(
+      id_ramo %in% c(24, 28, 30, 34) ~ "No programable",
+      id_ramo %in% c(52, 53) &
+        id_capitulo == 9000 ~ "No programable",
+      T ~ "Programable"
+    )
+  )
+}
+
+
+#' Generar clasificación económica
+#'
+#' @param .x base de datos de presupuesto
+#'
+#' @return una base de datos de presupuesto con clasificación económica
+#' @export
+gen_clas_eco <- function(.x) {
+  dplyr::mutate(.x, 
+                clas_eco = case_when(
+                  # Servicios personales
+                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_partida_especifica, "1|83101|83102|83106|83107|83108|83109|83110|83111|83112|83113|83114|83115|83116|83117") ~ "Gasto corriente",
+                  # Gastos de operación
+                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & (str_starts(id_partida_especifica, "2|3") & !str_starts(id_partida_especifica, "391|394|395|396|397|26106|32902|39908|39910")) ~ "Gasto corriente",
+                  # Subsidios
+                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_partida_especifica, "43") ~ "Gasto corriente",
+                  # Otros de corriente
+                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & (str_starts(id_partida_especifica, "4|79|85|391|394|395|396|397|834|26106|32902|39908|39910|83103|83105|83118") & !str_starts(id_partida_especifica, "43|45|47") | (str_starts(id_partida_especifica, "471") & (id_ramo == 19 & (id_ur == "GYR" | id_ur == "GYN")))) ~ "Gasto corriente",
+                  
+                  # PENSIONES Y JUBILACIONES
+                  str_starts(id_partida_especifica, "45") | (str_starts(id_partida_especifica, "471") & (id_ramo == 19 & (id_ur != "GYR" & id_ur != "GYN"))) ~ "Pensiones y jubilaciones",
+                  
+                  # GASTOS DE INVERSIÓN
+                  # Inversión física
+                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "1|2|5|6|3|4|79|85|831|834") & !str_starts(id_partida_especifica, "39909|43") ~ "Gastos de inversión",
+                  # Subsidios
+                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "43") ~ "Gastos de inversión",
+                  # Otros de inversión
+                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "7|39909") & !str_starts(id_partida_especifica, "79") ~ "Gastos de inversión",
+                  
+                  T ~ NA_character_
+                )
+  )
+}
+
 
 
