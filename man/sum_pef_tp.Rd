@@ -4,10 +4,10 @@
 \alias{sum_pef_tp}
 \title{Agrupación del presupuesto}
 \usage{
-sum_pef_tp(data, ..., periodo_col = NA, keep_mensual = T)
+sum_pef_tp(.x, ..., periodo_col = NA, keep_mensual = T)
 }
 \arguments{
-\item{data}{data frame con la estructura de los archivos sobre presupuesto
+\item{.x}{.x frame con la estructura de los archivos sobre presupuesto
 de transparencia Presupuestaria
 (https://www.transparenciapresupuestaria.gob.mx/es/PTP/Datos_Abiertos).}
 
@@ -17,7 +17,7 @@ sin caracteres especiales y separado por guiones bajos. Por ejemplo,
 id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.}
 }
 \value{
-dataframe colapsado por las variables indicadas. En caso de no
+.xframe colapsado por las variables indicadas. En caso de no
 indicarse ninguna variable, sólo se colapsará por año fiscal.
 }
 \description{
@@ -25,7 +25,7 @@ Esta función permite agrupar las bases de datos abiertas del presupuesto
 de Transparencia Presupuestaria con los principales niveles de agregación.
 De esta manera, podemos generar resumenes presupuestales de acuerdo a su
 clasificación administrativa, funcional o económica.
-Por ejemplo, permite generar rápidamente un dataframe con el presupuesto
+Por ejemplo, permite generar rápidamente un .xframe con el presupuesto
 en todas sus categorías disponibles(aprobado, modificado, pagado y
 ejercido) por ramo.
 Nota 1: esta función siempre mantiene el periodo indicado y, en caso de no

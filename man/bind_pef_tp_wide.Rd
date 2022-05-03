@@ -2,12 +2,12 @@
 % Please edit documentation in R/analisis_ppto.R
 \name{bind_pef_tp_wide}
 \alias{bind_pef_tp_wide}
-\title{Agrupar lista de dataframes de presupuesto en formato wide}
+\title{Agrupar lista de .xframes de presupuesto en formato wide}
 \usage{
 bind_pef_tp_wide(lista_df, ...)
 }
 \arguments{
-\item{lista_df}{lista de dataframes con la estructura de los datos abiertos
+\item{lista_df}{lista de .xframes con la estructura de los datos abiertos
 de presupuesto de Transparencia Presupuestaria.}
 
 \item{...}{nombre de las variables por las cuales se quiere colapsar
@@ -16,7 +16,7 @@ sin caracteres especiales y separado por guiones bajos. Por ejemplo,
 id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.}
 }
 \value{
-dataframe colapsado por las variables indicadas. En caso de no
+.xframe colapsado por las variables indicadas. En caso de no
 indicarse ninguna variable, sólo se colapsará por año fiscal.
 }
 \description{
@@ -24,13 +24,13 @@ Esta función retoma la una función sum_pef_tp (por lo cual le aplican las
 mismas reglas) y la aplica a una lista de presupuesto. Esto ayuda cuando
 se quiere generar datos históricos del presupuesto en formato wide, los
 cuales normalmente están en diferentes archivos.
-Lo ideal es cargar todos los dataframes de presupuesto en una lista de
-dataframes y seleccionar las variables por las que se quiere acumular la
+Lo ideal es cargar todos los .xframes de presupuesto en una lista de
+.xframes y seleccionar las variables por las que se quiere acumular la
 información.
 Por ejemplo. Si colocamos un vector de las cuentas públicas de cada año
 fiscal sin señalar ninguna variable, esta función regresará el total
 del presupuesto (sin neteo) de todos los ciclos fiscales incluídos.
-Nota 1: si se acumulan dos dataframes del mismo año fiscal y no de le
+Nota 1: si se acumulan dos .xframes del mismo año fiscal y no de le
 distingue con una variable periodo, esta función sólo señalará el ciclo
 fiscal sin distinguir si son de trimestress diferentes.
 Nota 2: esta función no distingue los cambios de claves y términos a lo

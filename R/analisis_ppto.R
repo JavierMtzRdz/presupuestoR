@@ -28,10 +28,10 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 
     temp <- tempfile(fileext = ".xlsx")
 
-    dataURL <-
+    .xURL <-
       "https://www.transparenciapresupuestaria.gob.mx/work/models/PTP/Presupuesto/Programacion/Deflactores/Deflactores_PIB.xlsx"
 
-    download.file(dataURL, destfile = temp, mode = 'wb')
+    download.file(.xURL, destfile = temp, mode = 'wb')
 
     deflactor <<- readxl::read_excel(temp,
                                      range = "B4:O42") %>%
@@ -87,7 +87,7 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 #' de Transparencia Presupuestaria con los principales niveles de agregación.
 #' De esta manera, podemos generar resumenes presupuestales de acuerdo a su
 #' clasificación administrativa, funcional o económica.
-#' Por ejemplo, permite generar rápidamente un dataframe con el presupuesto
+#' Por ejemplo, permite generar rápidamente un .xframe con el presupuesto
 #' en todas sus categorías disponibles(aprobado, modificado, pagado y
 #' ejercido) por ramo.
 #' Nota 1: esta función siempre mantiene el periodo indicado y, en caso de no
@@ -102,7 +102,7 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 #' presupuesto por estas categorías, la función lo clasificará como
 #' categorías diferentes.
 #'
-#' @param data data frame con la estructura de los archivos sobre presupuesto
+#' @param .x .x frame con la estructura de los archivos sobre presupuesto
 #' de transparencia Presupuestaria
 #' (https://www.transparenciapresupuestaria.gob.mx/es/PTP/Datos_Abiertos).
 #' @param ... nombre de las variables por las cuales se quiere colapsar
@@ -111,14 +111,14 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 #' id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.
 #'
 #' @importFrom magrittr %>%
-#' @return dataframe colapsado por las variables indicadas. En caso de no
+#' @return .xframe colapsado por las variables indicadas. En caso de no
 #' indicarse ninguna variable, sólo se colapsará por año fiscal.
 #' @export
-sum_pef_tp <- function(data, ...,
+sum_pef_tp <- function(.x, ...,
                        periodo_col = NA,
                        keep_mensual = T) {
 
-  data %>%
+  .x %>%
     janitor::clean_names() %>%
     {
       if ("id_ramo" %in% names(.))
@@ -291,19 +291,19 @@ sum_pef_tp <- function(data, ...,
 }
 
 
-#' Agrupar lista de dataframes de presupuesto en formato long
+#' Agrupar lista de .xframes de presupuesto en formato long
 #'
 #' Esta función retoma la una función sum_pef (por lo cual le aplican las
 #' mismas reglas) y la aplica a una lista de presupuesto. Esto ayuda cuando
 #' se quiere generar datos históricos del presupuesto en formato long, los
 #' cuales normalmente están en diferentes archivos.
-#' Lo ideal es cargar todos los dataframes de presupuesto en una lista de
-#' dataframes y seleccionar las variables por las que se quiere acumular la
+#' Lo ideal es cargar todos los .xframes de presupuesto en una lista de
+#' .xframes y seleccionar las variables por las que se quiere acumular la
 #' información.
 #' Por ejemplo. Si colocamos un vector de las cuentas públicas de cada año
 #' fiscal sin señalar ninguna variable, esta función regresará el total
 #' del presupuesto (sin neteo) de todos los ciclos fiscales incluídos.
-#' Nota 1: si se acumulan dos dataframes del mismo año fiscal y no de le
+#' Nota 1: si se acumulan dos .xframes del mismo año fiscal y no de le
 #' distingue con una variable periodo, esta función sólo señalará el ciclo
 #' fiscal sin distinguir si son de trimestress diferentes.
 #' Nota 2: esta función no distingue los cambios de claves y términos a lo
@@ -316,14 +316,14 @@ sum_pef_tp <- function(data, ...,
 #' presupuesto por estas categorías, la función lo clasificará como
 #' categorías diferentes.
 #'
-#' @param lista_df lista de dataframes con la estructura de los datos abiertos
+#' @param lista_df lista de .xframes con la estructura de los datos abiertos
 #' de presupuesto de Transparencia Presupuestaria.
 #' @param ... nombre de las variables por las cuales se quiere colapsar
 #' la información. Estos nombre tienen que estar completamente en minúscula
 #' sin caracteres especiales y separado por guiones bajos. Por ejemplo,
 #' id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.
 #'
-#' @return dataframe colapsado por las variables indicadas. En caso de no
+#' @return .xframe colapsado por las variables indicadas. En caso de no
 #' indicarse ninguna variable, sólo se colapsará por año fiscal.
 #' @export
 bind_pef_tp <- function(lista_df, ...) {
@@ -333,19 +333,19 @@ bind_pef_tp <- function(lista_df, ...) {
 }
 
 
-#' Agrupar lista de dataframes de presupuesto en formato wide
+#' Agrupar lista de .xframes de presupuesto en formato wide
 #'
 #' Esta función retoma la una función sum_pef_tp (por lo cual le aplican las
 #' mismas reglas) y la aplica a una lista de presupuesto. Esto ayuda cuando
 #' se quiere generar datos históricos del presupuesto en formato wide, los
 #' cuales normalmente están en diferentes archivos.
-#' Lo ideal es cargar todos los dataframes de presupuesto en una lista de
-#' dataframes y seleccionar las variables por las que se quiere acumular la
+#' Lo ideal es cargar todos los .xframes de presupuesto en una lista de
+#' .xframes y seleccionar las variables por las que se quiere acumular la
 #' información.
 #' Por ejemplo. Si colocamos un vector de las cuentas públicas de cada año
 #' fiscal sin señalar ninguna variable, esta función regresará el total
 #' del presupuesto (sin neteo) de todos los ciclos fiscales incluídos.
-#' Nota 1: si se acumulan dos dataframes del mismo año fiscal y no de le
+#' Nota 1: si se acumulan dos .xframes del mismo año fiscal y no de le
 #' distingue con una variable periodo, esta función sólo señalará el ciclo
 #' fiscal sin distinguir si son de trimestress diferentes.
 #' Nota 2: esta función no distingue los cambios de claves y términos a lo
@@ -358,7 +358,7 @@ bind_pef_tp <- function(lista_df, ...) {
 #' presupuesto por estas categorías, la función lo clasificará como
 #' categorías diferentes.
 #'
-#' @param lista_df lista de dataframes con la estructura de los datos abiertos
+#' @param lista_df lista de .xframes con la estructura de los datos abiertos
 #' de presupuesto de Transparencia Presupuestaria.
 #' @param ... nombre de las variables por las cuales se quiere colapsar
 #' la información. Estos nombre tienen que estar completamente en minúscula
@@ -366,7 +366,7 @@ bind_pef_tp <- function(lista_df, ...) {
 #' id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.
 #'
 #' @importFrom magrittr %>%
-#' @return dataframe colapsado por las variables indicadas. En caso de no
+#' @return .xframe colapsado por las variables indicadas. En caso de no
 #' indicarse ninguna variable, sólo se colapsará por año fiscal.
 #' @export
 bind_pef_tp_wide <- function(lista_df, ...) {
@@ -403,16 +403,16 @@ bind_pef_tp_wide <- function(lista_df, ...) {
 #' Ojo: esta función aún está en desarrollo y, hasta ahora, el neteo sólo
 #' es correcto aplicado al presupuesto aprobado.
 #'
-#' @param data dataframe con la estructura de los datos abiertos de
+#' @param .x .xframe con la estructura de los datos abiertos de
 #' presupuesto de Transparencia Presupuestaria.
 #' @param ... modificación y creación de variables equivalente a dplyr::mutate
 #'
 #' @importFrom magrittr %>%
-#' @return dataframe cuya descripción de ramo indica los casos en que esa
+#' @return .xframe cuya descripción de ramo indica los casos en que esa
 #' categoría del gasto debe ser neteada.
 #' @export
-netear_tp <- function(data, ..., keep_mensual = T) {
-  data <- data %>%
+netear_tp <- function(.x, ..., keep_mensual = T) {
+  .x <- .x %>%
     janitor::clean_names() %>%
     {
       if (keep_mensual)
@@ -443,7 +443,7 @@ netear_tp <- function(data, ..., keep_mensual = T) {
       ejercido = dplyr::contains(c("ejercido", "ejercicio"))
     )
 
-  data %>%
+  .x %>%
     {
       if ("id_objeto_del_gasto" %in% names(.)) {
         mutate(
@@ -459,7 +459,7 @@ netear_tp <- function(data, ..., keep_mensual = T) {
       } else
         .
     } %>%
-    dplyr::bind_rows(data %>%
+    dplyr::bind_rows(.x %>%
                        {
                          if ("id_objeto_del_gasto" %in% names(.)) {
                            dplyr::mutate(
@@ -512,15 +512,15 @@ netear_tp <- function(data, ..., keep_mensual = T) {
 #' "Neteo" como descripción del ramo en valores negativos. Normalmente se
 #' debería usar después de la función de netear_tp.
 #'
-#' @param data dataframe con la estructura de los datos abiertos de
+#' @param .x .xframe con la estructura de los datos abiertos de
 #' presupuesto de Transparencia Presupuestaria.
 #'
 #' @importFrom magrittr %>%
-#' @return dataframe cuyas categorías del gasto con descripción del ramo
+#' @return .xframe cuyas categorías del gasto con descripción del ramo
 #' como "Neteo" están en valores negativos.
 #' @export
-negative_neteo_tp <- function(data) {
-  data %>%
+negative_neteo_tp <- function(.x) {
+  .x %>%
     {
       if ("aprobado" %in% names(.)) {
         dplyr::mutate(.,
@@ -911,9 +911,9 @@ gen_tipo_programable <- function(.x) {
 #' @return una base de datos de presupuesto con clasificación económica
 #' @export
 gen_clas_eco <- 
-  function (data, ..., periodo_col = NA, keep_mensual = T) {
+  function (.x, ..., periodo_col = NA, keep_mensual = T) {
     
-    data %>% janitor::clean_names() %>% {
+    .x %>% janitor::clean_names() %>% {
       if ("id_ramo" %in% names(.)) 
         dplyr::mutate(., id_ramo = as.character(id_ramo))
       else .
@@ -1015,6 +1015,156 @@ gen_clas_eco <-
           (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "43") ~ "Gastos de inversión",
           # Otros de inversión
           (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "7|39909") & !str_starts(id_objeto_del_gasto, "79") ~ "Gastos de inversión",
+          
+          T ~ NA_character_
+        )
+        
+      )
+      
+      
+    }
+    
+  }
+
+
+
+#' Generar subclasificación económica
+#'
+#' @param .x base de datos de presupuesto
+#'
+#' @return una base de datos de presupuesto con subclasificación económica
+#' @export
+gen_subclas_eco <- 
+  function (.x, ..., periodo_col = NA, keep_mensual = T) {
+    
+    .x %>% 
+      janitor::clean_names() %>% {
+      if ("id_ramo" %in% names(.)) 
+        dplyr::mutate(., id_ramo = as.character(id_ramo))
+      else .
+    } %>% {
+      if (!is.na(periodo_col) & !("periodo" %in% names(.))) 
+        dplyr::mutate(., periodo = periodo_col)
+      else .
+    } %>% {
+      if ("ciclo" %in% names(.)) 
+        dplyr::mutate(., ciclo = as.numeric(ciclo))
+      else .
+    } %>% {
+      if (!("periodo" %in% names(.)) & ("ciclo" %in% names(.))) 
+        dplyr::mutate(., periodo = as.numeric(ciclo))
+      else .
+    } %>% {
+      if (!("periodo" %in% names(.)) & !("ciclo" %in% names(.))) 
+        dplyr::mutate(., periodo = NA)
+      else .
+    } %>% {
+      if (("id_capitulo" %in% names(.))) 
+        dplyr::mutate(., id_capitulo = as.numeric(substr(id_capitulo, 
+                                                         0, 1)) * 1000)
+      else .
+    } %>% {
+      if (!("id_capitulo" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                            names(.))) 
+        dplyr::mutate(., id_capitulo = as.numeric(substr(id_objeto_del_gasto, 
+                                                         0, 1)) * 1000)
+      else .
+    } %>% {
+      if (("id_concepto" %in% names(.))) 
+        dplyr::mutate(., id_concepto = as.numeric(substr(id_concepto, 
+                                                         0, 2)) * 100)
+      else .
+    } %>% {
+      if (!("id_concepto" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                            names(.))) 
+        dplyr::mutate(., id_concepto = as.numeric(substr(id_objeto_del_gasto, 
+                                                         0, 2)) * 100)
+      else .
+    } %>% {
+      if (("id_partida_generica" %in% names(.))) 
+        dplyr::mutate(., id_partida_generica = as.numeric(substr(id_partida_generica, 
+                                                                 0, 3)) * 10)
+      else .
+    } %>% {
+      if (!("id_partida_generica" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                                    names(.))) 
+        dplyr::mutate(., id_partida_generica = as.numeric(substr(id_objeto_del_gasto, 
+                                                                 0, 3)) * 10)
+      else .
+    } %>% {
+      if (("id_objeto_del_gasto" %in% names(.))) 
+        dplyr::mutate(., id_objeto_del_gasto = as.numeric(id_objeto_del_gasto))
+      else .
+    } %>% {
+      if (!("id_objeto_del_gasto" %in% names(.)) & ("id_partida_especifica" %in% 
+                                                    names(.))) 
+        dplyr::mutate(., id_objeto_del_gasto = as.numeric(id_partida_especifica))
+      else .
+    } %>% {
+      if (!("desc_objeto_del_gasto" %in% names(.)) & ("desc_partida_especifica" %in% 
+                                                      names(.))) 
+        dplyr::mutate(., desc_objeto_del_gasto = desc_partida_especifica)
+      else .
+    } %>% {
+      if ("id_ur" %in% names(.)) 
+        dplyr::mutate(., id_ur = as.character(id_ur))
+      else .
+    } %>% {
+      # if (!("clasif_eco" %in% names(.)) & ("id_ramo" %in% names(.) & "id_capitulo" %in% names(.))) {
+      
+      dplyr::mutate(
+        
+        ., clasif_eco = dplyr::case_when(
+          # GASTO CORRIENTE
+          # Subsidios
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "43") ~ "Gasto corriente",
+          # Servicios personales
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "1|83101|83102|83106|83107|83108|83109|83110|83111|83112|83113|83114|83115|83116|83117") ~ "Gasto corriente",
+          # Gastos de operación
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "2|3") & !str_starts(id_objeto_del_gasto, "391|394|395|396|397|26106|32902|39908|39910") ~ "Gasto corriente",
+          # Otros de corriente
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & 
+            (
+              (id_capitulo == "4000" & id_concepto != "4300" & id_concepto != "4500"& id_concepto != "4700") | # !str_starts(id_objeto_del_gasto, "43|45|47")) | 
+                str_starts(id_objeto_del_gasto, "79|85|391|394|395|396|397|834|26106|32902|39908|39910|83103|83105|83118") |
+                (str_starts(id_objeto_del_gasto, "471") & (id_ramo == 19 & (id_ur == "GYR" | id_ur == "GYN")))
+            ) ~ "Gasto corriente",
+          
+          # PENSIONES Y JUBILACIONES
+          str_starts(id_objeto_del_gasto, "45") | (str_starts(id_objeto_del_gasto, "471") & (id_ramo == 19 & (id_ur != "GYR" & id_ur != "GYN"))) ~ "Pensiones y jubilaciones",
+          
+          # GASTOS DE INVERSIÓN
+          # Inversión física
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "1|2|5|6|3|4|79|85|831|834") & !str_starts(id_objeto_del_gasto, "39909|43") ~ "Gastos de inversión",
+          # Subsidios
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "43") ~ "Gastos de inversión",
+          # Otros de inversión
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "7|39909") & !str_starts(id_objeto_del_gasto, "79") ~ "Gastos de inversión",
+          
+          T ~ NA_character_
+        ),
+        sub_clasif_eco = dplyr::case_when(
+          # GASTO CORRIENTE
+          # Subsidios
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & id_concepto == "4300" ~ "Subsidios",
+          # Servicios personales
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "1|83101|83102|83106|83107|83108|83109|83110|83111|83112|83113|83114|83115|83116|83117") ~ "Servicios personales",
+          # Gastos de operación
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "2|3") & !str_starts(id_objeto_del_gasto, "391|394|395|396|397|26106|32902|39908|39910") ~ "Gastos de operación",
+          clasif_eco == "Gasto corriente" ~ "Gastos de operación",
+          
+          # PENSIONES Y JUBILACIONES
+          str_starts(id_objeto_del_gasto, "45") | (str_starts(id_objeto_del_gasto, "471") & (id_ramo == 19 & (id_ur != "GYR" & id_ur != "GYN"))) ~ "Pensiones y jubilaciones",
+          
+          # GASTOS DE INVERSIÓN
+          # Subsidios
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "43") ~ "Subsidios",
+          # Inversión financiera
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & (id_capitulo == "7000" & id_concepto != "7900") ~ "Inversión financiera",
+          # Otros de inversión
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "7|39909") & !str_starts(id_objeto_del_gasto, "79") ~ "Otros de inversión",
+          # Inversión física
+          clasif_eco == "Gastos de inversión" ~ "Inversión física",
           
           T ~ NA_character_
         )

@@ -4,16 +4,16 @@
 \alias{netear_tp}
 \title{Netear}
 \usage{
-netear_tp(data, ..., keep_mensual = T)
+netear_tp(.x, ..., keep_mensual = T)
 }
 \arguments{
-\item{data}{dataframe con la estructura de los datos abiertos de
+\item{.x}{.xframe con la estructura de los datos abiertos de
 presupuesto de Transparencia Presupuestaria.}
 
 \item{...}{modificación y creación de variables equivalente a dplyr::mutate}
 }
 \value{
-dataframe cuya descripción de ramo indica los casos en que esa
+.xframe cuya descripción de ramo indica los casos en que esa
 categoría del gasto debe ser neteada.
 }
 \description{

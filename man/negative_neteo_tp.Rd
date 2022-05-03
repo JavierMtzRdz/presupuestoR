@@ -4,14 +4,14 @@
 \alias{negative_neteo_tp}
 \title{Presupuesto para neteo en negativo}
 \usage{
-negative_neteo_tp(data)
+negative_neteo_tp(.x)
 }
 \arguments{
-\item{data}{dataframe con la estructura de los datos abiertos de
+\item{.x}{.xframe con la estructura de los datos abiertos de
 presupuesto de Transparencia Presupuestaria.}
 }
 \value{
-dataframe cuyas categorías del gasto con descripción del ramo
+.xframe cuyas categorías del gasto con descripción del ramo
 como "Neteo" están en valores negativos.
 }
 \description{
