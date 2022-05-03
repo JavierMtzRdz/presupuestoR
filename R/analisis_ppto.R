@@ -910,33 +910,118 @@ gen_tipo_programable <- function(.x) {
 #'
 #' @return una base de datos de presupuesto con clasificación económica
 #' @export
-gen_clas_eco <- function(.x) {
-  dplyr::mutate(.x, 
-                clas_eco = case_when(
-                  # Servicios personales
-                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_partida_especifica, "1|83101|83102|83106|83107|83108|83109|83110|83111|83112|83113|83114|83115|83116|83117") ~ "Gasto corriente",
-                  # Gastos de operación
-                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & (str_starts(id_partida_especifica, "2|3") & !str_starts(id_partida_especifica, "391|394|395|396|397|26106|32902|39908|39910")) ~ "Gasto corriente",
-                  # Subsidios
-                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_partida_especifica, "43") ~ "Gasto corriente",
-                  # Otros de corriente
-                  (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & (str_starts(id_partida_especifica, "4|79|85|391|394|395|396|397|834|26106|32902|39908|39910|83103|83105|83118") & !str_starts(id_partida_especifica, "43|45|47") | (str_starts(id_partida_especifica, "471") & (id_ramo == 19 & (id_ur == "GYR" | id_ur == "GYN")))) ~ "Gasto corriente",
-                  
-                  # PENSIONES Y JUBILACIONES
-                  str_starts(id_partida_especifica, "45") | (str_starts(id_partida_especifica, "471") & (id_ramo == 19 & (id_ur != "GYR" & id_ur != "GYN"))) ~ "Pensiones y jubilaciones",
-                  
-                  # GASTOS DE INVERSIÓN
-                  # Inversión física
-                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "1|2|5|6|3|4|79|85|831|834") & !str_starts(id_partida_especifica, "39909|43") ~ "Gastos de inversión",
-                  # Subsidios
-                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "43") ~ "Gastos de inversión",
-                  # Otros de inversión
-                  (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_partida_especifica, "7|39909") & !str_starts(id_partida_especifica, "79") ~ "Gastos de inversión",
-                  
-                  T ~ NA_character_
-                )
-  )
-}
-
-
-
+gen_clas_eco <- 
+  function (data, ..., periodo_col = NA, keep_mensual = T) {
+    
+    data %>% janitor::clean_names() %>% {
+      if ("id_ramo" %in% names(.)) 
+        dplyr::mutate(., id_ramo = as.character(id_ramo))
+      else .
+    } %>% {
+      if (!is.na(periodo_col) & !("periodo" %in% names(.))) 
+        dplyr::mutate(., periodo = periodo_col)
+      else .
+    } %>% {
+      if ("ciclo" %in% names(.)) 
+        dplyr::mutate(., ciclo = as.numeric(ciclo))
+      else .
+    } %>% {
+      if (!("periodo" %in% names(.)) & ("ciclo" %in% names(.))) 
+        dplyr::mutate(., periodo = as.numeric(ciclo))
+      else .
+    } %>% {
+      if (!("periodo" %in% names(.)) & !("ciclo" %in% names(.))) 
+        dplyr::mutate(., periodo = NA)
+      else .
+    } %>% {
+      if (("id_capitulo" %in% names(.))) 
+        dplyr::mutate(., id_capitulo = as.numeric(substr(id_capitulo, 
+                                                         0, 1)) * 1000)
+      else .
+    } %>% {
+      if (!("id_capitulo" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                            names(.))) 
+        dplyr::mutate(., id_capitulo = as.numeric(substr(id_objeto_del_gasto, 
+                                                         0, 1)) * 1000)
+      else .
+    } %>% {
+      if (("id_concepto" %in% names(.))) 
+        dplyr::mutate(., id_concepto = as.numeric(substr(id_concepto, 
+                                                         0, 2)) * 100)
+      else .
+    } %>% {
+      if (!("id_concepto" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                            names(.))) 
+        dplyr::mutate(., id_concepto = as.numeric(substr(id_objeto_del_gasto, 
+                                                         0, 2)) * 100)
+      else .
+    } %>% {
+      if (("id_partida_generica" %in% names(.))) 
+        dplyr::mutate(., id_partida_generica = as.numeric(substr(id_partida_generica, 
+                                                                 0, 3)) * 10)
+      else .
+    } %>% {
+      if (!("id_partida_generica" %in% names(.)) & ("id_objeto_del_gasto" %in% 
+                                                    names(.))) 
+        dplyr::mutate(., id_partida_generica = as.numeric(substr(id_objeto_del_gasto, 
+                                                                 0, 3)) * 10)
+      else .
+    } %>% {
+      if (("id_objeto_del_gasto" %in% names(.))) 
+        dplyr::mutate(., id_objeto_del_gasto = as.numeric(id_objeto_del_gasto))
+      else .
+    } %>% {
+      if (!("id_objeto_del_gasto" %in% names(.)) & ("id_partida_especifica" %in% 
+                                                    names(.))) 
+        dplyr::mutate(., id_objeto_del_gasto = as.numeric(id_partida_especifica))
+      else .
+    } %>% {
+      if (!("desc_objeto_del_gasto" %in% names(.)) & ("desc_partida_especifica" %in% 
+                                                      names(.))) 
+        dplyr::mutate(., desc_objeto_del_gasto = desc_partida_especifica)
+      else .
+    } %>% {
+      if ("id_ur" %in% names(.)) 
+        dplyr::mutate(., id_ur = as.character(id_ur))
+      else .
+    } %>% {
+      # if (!("clasif_eco" %in% names(.)) & ("id_ramo" %in% names(.) & "id_capitulo" %in% names(.))) {
+      
+      dplyr::mutate(
+        
+        ., clasif_eco = dplyr::case_when(
+          # GASTO CORRIENTE
+          # Subsidios
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "43") ~ "Gasto corriente",
+          # Servicios personales
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "1|83101|83102|83106|83107|83108|83109|83110|83111|83112|83113|83114|83115|83116|83117") ~ "Gasto corriente",
+          # Gastos de operación
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & str_starts(id_objeto_del_gasto, "2|3") & !str_starts(id_objeto_del_gasto, "391|394|395|396|397|26106|32902|39908|39910") ~ "Gasto corriente",
+          # Otros de corriente
+          (id_tipogasto == 0 | id_tipogasto == 1 | id_tipogasto == 7) & 
+            (
+              (id_capitulo == "4000" & id_concepto != "4300" & id_concepto != "4500"& id_concepto != "4700") | # !str_starts(id_objeto_del_gasto, "43|45|47")) | 
+                str_starts(id_objeto_del_gasto, "79|85|391|394|395|396|397|834|26106|32902|39908|39910|83103|83105|83118") |
+                (str_starts(id_objeto_del_gasto, "471") & (id_ramo == 19 & (id_ur == "GYR" | id_ur == "GYN")))
+            ) ~ "Gasto corriente",
+          
+          # PENSIONES Y JUBILACIONES
+          str_starts(id_objeto_del_gasto, "45") | (str_starts(id_objeto_del_gasto, "471") & (id_ramo == 19 & (id_ur != "GYR" & id_ur != "GYN"))) ~ "Pensiones y jubilaciones",
+          
+          # GASTOS DE INVERSIÓN
+          # Inversión física
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "1|2|5|6|3|4|79|85|831|834") & !str_starts(id_objeto_del_gasto, "39909|43") ~ "Gastos de inversión",
+          # Subsidios
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "43") ~ "Gastos de inversión",
+          # Otros de inversión
+          (id_tipogasto == 2| id_tipogasto == 3 | id_tipogasto == 9) & str_starts(id_objeto_del_gasto, "7|39909") & !str_starts(id_objeto_del_gasto, "79") ~ "Gastos de inversión",
+          
+          T ~ NA_character_
+        )
+        
+      )
+      
+      
+    }
+    
+  }
