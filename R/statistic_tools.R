@@ -40,9 +40,9 @@ indexing <- function(.x,
     dplyr::mutate(!!ct := (!!cf*n_base)/ifelse(sum(ifelse(!!!group_vars ,
                                                          1, 0)) == 1,
                                               sum(ifelse(!!!group_vars ,
-                                                         !!c, 0)),
+                                                         !!cf, 0)),
                                               sum(ifelse(!!!group_vars ,
-                                                         !!c, 0))/sum(ifelse(!!!group_vars ,
+                                                         !!cf, 0))/sum(ifelse(!!!group_vars ,
                                                                              1, 0))))
   
   
