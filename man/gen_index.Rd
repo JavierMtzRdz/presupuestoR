@@ -21,7 +21,7 @@ gen_index(.x, col_from, col_to = index, ..., n_base = 100)
 Regresa la base de datos con la colúmna con el índice
 }
 \description{
-Esa función genera un índice a partir de cambios de un periodo (ejemplo, 
+Esa función genera un índice a partir de cambios de un periodo (ejemplo,
 de un mes en estadisticas mensuales o de un trimestre en estadisticas
 trimestrales)
 }

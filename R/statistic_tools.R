@@ -2,7 +2,7 @@ u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
 
 #' Indexar o reindexar
 #'
-#' Esa función genera un índice a partir de cierto periodo base. 
+#' Esa función genera un índice a partir de cierto periodo base.
 #'
 #' @param .x Base de datos tidy
 #' @param col_from Columna que se va a indexar
@@ -11,8 +11,6 @@ u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
 #' @param n_base Base del índice
 #'
 #' @importFrom magrittr %>%
-#' @importFrom rlang !
-#' @importFrom rlang !!!
 #' @return Regresa la base de datos con la colúmna con el índice
 #' @export
 indexing <- function(.x,
@@ -20,22 +18,22 @@ indexing <- function(.x,
                      col_to = index,
                      ...,
                      n_base = 100){
-  
+
   cf <- rlang::enquo(col_from)
-  
+
   ct <- rlang::enquo(col_to)
-  
+
   group_vars <- rlang::enquos(...)
-  
-  
-  rows <- .x %>% 
+
+
+  rows <- .x %>%
     dplyr::mutate(num = sum(ifelse(!!!group_vars,
-                                   1, 0))) %>% 
-    dplyr::filter(num > 1) %>% 
+                                   1, 0))) %>%
+    dplyr::filter(num > 1) %>%
     nrow()
-  
+
   if (rows > 1) {warning("Se está usando como referencia más de una fila")}
-  
+
   .x <- .x %>%
     dplyr::mutate(!!ct := (!!cf*n_base)/ifelse(sum(ifelse(!!!group_vars ,
                                                          1, 0)) == 1,
@@ -44,16 +42,16 @@ indexing <- function(.x,
                                               sum(ifelse(!!!group_vars ,
                                                          !!cf, 0))/sum(ifelse(!!!group_vars ,
                                                                              1, 0))))
-  
-  
-  
-  return(.x) 
-  
+
+
+
+  return(.x)
+
 }
 
 #' Generar índice combaso en cambio entre periodos
 #'
-#' Esa función genera un índice a partir de cambios de un periodo (ejemplo, 
+#' Esa función genera un índice a partir de cambios de un periodo (ejemplo,
 #' de un mes en estadisticas mensuales o de un trimestre en estadisticas
 #' trimestrales)
 #'
@@ -64,8 +62,6 @@ indexing <- function(.x,
 #' @param n_base Base del índice
 #'
 #' @importFrom magrittr %>%
-#' @importFrom rlang !
-#' @importFrom rlang !!!
 #' @return Regresa la base de datos con la colúmna con el índice
 #' @export
 gen_index <- function(.x,
@@ -73,32 +69,32 @@ gen_index <- function(.x,
                       col_to = index,
                       ...,
                       n_base = 100){
-  
+
   cf <- rlang::enquo(col_from)
-  
+
   ct <- rlang::enquo(col_to)
-  
+
   group_vars <- rlang::enquos(...)
-  
+
   .x <- .x %>%
     dplyr::mutate(!!ct := ifelse(!!!group_vars,
-                          100, NA))
-  
-  while (.x %>% 
-         dplyr::filter(!is.na(dplyr::lag(!!cf)) | 
-                !is.na(dplyr::lead(!!cf))) %>% 
-         dplyr::pull(!!ct) %>% 
-         is.na() %>% 
+                                 n_base, NA))
+
+  while (.x %>%
+         dplyr::filter(!is.na(dplyr::lag(!!cf)) |
+                !is.na(dplyr::lead(!!cf))) %>%
+         dplyr::pull(!!ct) %>%
+         is.na() %>%
          any()) {
-    
-    
+
+
     .x <- .x %>%
       dplyr::mutate(!!ct := ifelse(!is.na(!!ct),
                             !!ct, (dplyr::lag(!!ct)/1)*(1+!!cf)),
              !!ct := ifelse(!is.na(!!ct),
                             !!ct, (dplyr::lead(!!ct)*1)/(1+dplyr::lead(!!cf))))
-  } 
-  return(.x) 
+  }
+  return(.x)
 }
 
 #' Abrevia una entidad
@@ -118,7 +114,7 @@ entidad_to_abr2 <- function(entidad) {
   y <- stringi::stri_trans_general(entidad,"latin-ascii" )
   y <- stringi::stri_replace_all(y, regex = "[:punct:]", "")
   y <- stringr::str_to_title(y)
-  
+
   case_when(
     y == "Tabasco" ~ "Tab.",
     y == "Nayarit" ~ "Nay.",
@@ -180,29 +176,27 @@ entidad_to_abr2 <- function(entidad) {
 #' @param date Variable de fechas
 #'
 #' @importFrom magrittr %>%
-#' @importFrom rlang !
-#' @importFrom rlang !!!
 #' @return Regresa la base de datos con la colúmna con el índice
 #' @export
 conect_value <- function(.x,
                          variable,
                          date = NA) {
-  
+
   variable_e <- enquo(variable)
-  
+
   date_e <- enquo(date)
-  
-  .x <- .x %>% 
-    arrange(!!date_e, .by_group = T) %>% 
+
+  .x <- .x %>%
+    arrange(!!date_e, .by_group = T) %>%
     mutate(n = ifelse(!!variable_e != lag(!!variable_e),
                       2, 1),
            n = lead(n),
-           n = replace_na(n, 1)) %>% 
-    uncount(n, .id = "id") %>% 
+           n = replace_na(n, 1)) %>%
+    uncount(n, .id = "id") %>%
     mutate(!!variable_e := ifelse(id == 2,
                                   lead(!!variable_e),
-                                  !!variable_e)) %>% 
+                                  !!variable_e)) %>%
     select(-id)
-  
+
   return(.x)
 }
