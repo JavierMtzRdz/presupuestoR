@@ -95,3 +95,94 @@ deflactar_inpc <- function(monto, year_monto, year_out, mes = 12, acumulado = T)
 
 }
 
+#' Obtener datos de Banxico
+#'
+#' Esa función ayuda a extraer los datos de banxico. Está basada enteramente
+#' en la librería de flores89/banxicoR, pero corrige un error que no permitía
+#' descargar la información.
+#'
+#'
+#' @return regresa un vector de los montos deflactados
+#' @export
+
+banxico_series2 <- function (series, metadata = FALSE, verbose = FALSE, mask = FALSE) {
+  # series = "SF331451"
+  # metadata = FALSE
+  # verbose = FALSE
+  # mask = FALSE
+
+  s <- as.character(series)
+  s <- paste0("http://www.banxico.org.mx/SieInternet/consultasieiqy?series=",
+              series, "&locale=en")
+  h <- xml2::read_html(x = s)
+  d <- rvest::html_nodes(x = h, css = "table")
+  if (verbose) {
+    print(paste0("Data series: ", series, " downloaded"))
+  }
+  mtd <- stringr::str_trim(rvest::html_text(rvest::html_nodes(rvest::html_nodes(rvest::html_nodes(d,
+                                                                                                  "table"), "table"), "td")))
+  mtd_head <- stringr::str_trim(rvest::html_text(rvest::html_nodes(rvest::html_nodes(rvest::html_nodes(rvest::html_nodes(d,
+                                                                                                                         "table"), "table"), "td"), "a")))
+  frequency <- banxicoR::banxico_parsemeta(mtd, "frequency")
+  if (verbose) {
+    print(paste0("Data series in ", frequency, " frequency"))
+  }
+  n <- length(d)
+  e <- rvest::html_table(x = d[n], fill = TRUE, header = TRUE)
+  e <- e[[1]]
+  names(e) <- gsub(pattern = "FECHA", replacement = "Dates",
+                   x = names(e))
+  names(e) <- gsub(pattern = "DATE", replacement = "Dates",
+                   x = names(e))
+  if (mask) {
+    names(e)[names(e) != "Dates"] <- "Values"
+  }
+  if (verbose) {
+    print(paste0("Parsing data with ", nrow(e), " rows"))
+  }
+  e <- dplyr::mutate_at(e, dplyr::vars(starts_with("S")), ~stringr::str_remove_all(., ","))
+  e <- dplyr::mutate_at(e, dplyr::vars(starts_with("S")), ~ifelse(stringr::str_detect(.,"N"),NA,.))
+  e <- dplyr::mutate_at(e, dplyr::vars(starts_with("S")), ~as.numeric(.))
+  if (frequency == "monthly") {
+    e$Dates <- base::as.Date(x = paste0("1/", e$Dates), format = "%d/%m/%Y")
+  } else {
+    if (frequency == "daily") {
+      e$Dates <- base::as.Date(x = e$Dates, format = "%m/%d/%Y")
+    } else {
+      if (frequency == "annual") {
+        e$Dates <- base::as.Date(x = paste0("01/01/",
+                                            e$Dates), format = "%d/%m/%Y")
+      }
+      else {
+        if (frequency == "quarterly") {
+          e$Dates <- base::as.Date(unlist(lapply(X = e[,
+                                                       1], FUN = function(x) {
+                                                         as.character(banxicoR::banxico_parsetrim(string = x,
+                                                                                                  trim_begin = TRUE))
+                                                       })))
+        } else {
+          e$Dates <- as.character(e$Dates)
+          warning("Frequency not supported. Saving as character.")
+        }
+      }
+    }
+  }
+  if (metadata) {
+    units <- banxicoR::banxico_parsemeta(mtd, "unit", exclude = FALSE)
+    datatype <- banxicoR::banxico_parsemeta(mtd, "data type",
+                                            exclude = FALSE)
+    period <- banxicoR::banxico_parsemeta(mtd, "period",
+                                          exclude = FALSE)
+    names <- banxicoR::banxico_parsemeta(mtd_head, series,
+                                         exclude = TRUE)
+    names <- stringr::str_to_title(paste0(names, collapse = " - "))
+    l <- list(MetaData = list(IndicatorName = names, IndicatorId = series,
+                              Units = units, DataType = datatype, Period = period,
+                              Frequency = frequency), Data = as.data.frame(e))
+    return(l)
+  }
+  else {
+    return(as.data.frame(e))
+  }
+}
+
