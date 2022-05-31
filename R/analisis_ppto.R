@@ -92,7 +92,7 @@ deflactar_tp <- function(monto, year_monto, year_out) {
 id_capitulo_to_desc_capitulo <- function(id_ramo) {
 
   y <- substr(id_ramo, 0,1)
-  y <- as.numeric(id_ramo)
+  y <- as.numeric(y)
 
   dplyr::case_when(
     y == 1 ~ "Servicios personales",
