@@ -4,7 +4,7 @@
 \alias{id_capitulo_to_desc_capitulo}
 \title{ID de capítulo a descripción de capítulo}
 \usage{
-id_capitulo_to_desc_capitulo(id_ramo)
+id_capitulo_to_desc_capitulo(id_capitulo)
 }
 \arguments{
 \item{id_capitulo}{la colúmna con la id del capítulo.}

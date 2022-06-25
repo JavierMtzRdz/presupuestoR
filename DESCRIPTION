@@ -16,10 +16,18 @@ Imports:
     tidyverse (>= 1.3.0),
     magrittr,
     readxl,
+    openxlsx,
     janitor,
     purrr,
     XML,
-    rlang
+    rlang,
+    rvest,
+    stringi,
+    stringr,
+    tidyr,
+    xml2,
+    banxicoR,
+    usethis
 Suggests:
     dplyr
 RoxygenNote: 7.1.2

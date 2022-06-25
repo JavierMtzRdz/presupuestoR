@@ -4,7 +4,7 @@
 \alias{deflactar_tp}
 \title{Deflactar montos}
 \usage{
-deflactar_tp(monto, year_monto, year_out)
+deflactar_tp(monto, year_monto, year_out, fuente = "local")
 }
 \arguments{
 \item{monto}{monto que se quiere deflactar}
@@ -14,10 +14,15 @@ entre 1994 y 2030)}
 
 \item{year_out}{año del precio al que se quiere deflactar (para que funciones tiene que ser
 entre 1994 y 2030)}
+
+\item{fuente}{aquí se indica si se quiere tomar el deflactor que se guardó en el
+paquete el 24 de junio de 2022 ("local") o se descarga el último archivo
+ ("cargar"). TP lo actualiza posterior a la presentación de la estructura programática
+ y el PPEF.}
 }
 \value{
 regresa un vector de los montos deflactados
 }
 \description{
-Esa función deflacta montos descargando la última versión de deflactores publicada por Transparencia presupuestaria.
+Esa funci\\u00f3n deflacta montos descargando la \\u00faltima versi\\u00f3n de deflactores publicada por Transparencia presupuestaria.
 }

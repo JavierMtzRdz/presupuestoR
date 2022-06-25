@@ -6,6 +6,15 @@
 \usage{
 banxico_series2(series, metadata = FALSE, verbose = FALSE, mask = FALSE)
 }
+\arguments{
+\item{series}{clave de la serio}
+
+\item{metadata}{indicador lógico sobre la inclusión metadara}
+
+\item{verbose}{indicador lógico para señalar si muestra los pasos}
+
+\item{mask}{comando lógico si usar el nombre de la serie o values como columna}
+}
 \value{
 regresa un vector de los montos deflactados
 }

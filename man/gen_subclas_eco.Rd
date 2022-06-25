@@ -2,16 +2,20 @@
 % Please edit documentation in R/analisis_ppto.R
 \name{gen_subclas_eco}
 \alias{gen_subclas_eco}
-\title{Generar subclasificación económica}
+\title{Generar subclasificaci\\u00f3n econ\\u00f3mica}
 \usage{
-gen_subclas_eco(.x, ..., periodo_col = NA, keep_mensual = T)
+gen_subclas_eco(.x, name_clas = clasif_eco, name_sub = sub_clasif_eco)
 }
 \arguments{
 \item{.x}{base de datos de presupuesto}
+
+\item{name_clas}{nombre de la columna con la clasificación económica}
+
+\item{name_sub}{nombre de la columna con la sclasificación económica}
 }
 \value{
-una base de datos de presupuesto con subclasificación económica
+una base de datos de presupuesto con subclasificaci\\u00f3n econ\\u00f3mica
 }
 \description{
-Generar subclasificación económica
+Generar subclasificaci\\u00f3n econ\\u00f3mica
 }

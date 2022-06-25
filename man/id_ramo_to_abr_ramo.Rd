@@ -7,13 +7,13 @@
 id_ramo_to_abr_ramo(id_ramo)
 }
 \arguments{
-\item{id_ramo}{clave númerica del ramo}
+\item{id_ramo}{clave n\\u00famerica del ramo}
 }
 \value{
-character con la clasificación administrativa del ramo
+character con la clasificaci\\u00f3n administrativa del ramo
 }
 \description{
-Nota 1: esta clasificación a la última actualización del año fiscal.
-Por ejemplo, en esta clasificación ya se considera al ramo 49 (FGR)
-como Fiscalía y no Procuraduría.
+Nota 1: esta clasificaci\\u00f3n a la \\u00faltima actualizaci\\u00f3n del a\\u00f1o fiscal.
+Por ejemplo, en esta clasificaci\\u00f3n ya se considera al ramo 49 (FGR)
+como Fiscal\\u00eda y no Procuradur\\u00eda.
 }

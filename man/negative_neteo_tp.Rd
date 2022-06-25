@@ -11,11 +11,11 @@ negative_neteo_tp(.x)
 presupuesto de Transparencia Presupuestaria.}
 }
 \value{
-.xframe cuyas categorías del gasto con descripción del ramo
-como "Neteo" están en valores negativos.
+.xframe cuyas categor\\u00edas del gasto con descripci\\u00f3n del ramo
+como "Neteo" est\\u00e1n en valores negativos.
 }
 \description{
-Esta función convierte aquellas categorías del presupuesto que tienen
-"Neteo" como descripción del ramo en valores negativos. Normalmente se
-debería usar después de la función de netear_tp.
+Esta funci\\u00f3n convierte aquellas categor\\u00edas del presupuesto que tienen
+"Neteo" como descripci\\u00f3n del ramo en valores negativos. Normalmente se
+deber\\u00eda usar despu\\u00e9s de la funci\\u00f3n de netear_tp.
 }

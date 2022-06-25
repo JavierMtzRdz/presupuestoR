@@ -13,7 +13,10 @@ deflactar_inpc(monto, year_monto, year_out, mes = 12, acumulado = T)
 
 \item{year_out}{año del precio al que se quiere deflactar}
 
-\item{mes}{mes a comparar}
+\item{mes}{mes a comparar. En caso de ser acumulado sin que comience en enero,
+tiene que ponerse una lista con el mes de inicio y fin.}
+
+\item{acumulado}{variable lógica para determinar si se quiere acumulado}
 }
 \value{
 regresa un vector de los montos deflactados

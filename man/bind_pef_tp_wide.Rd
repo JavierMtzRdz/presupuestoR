@@ -11,35 +11,35 @@ bind_pef_tp_wide(lista_df, ...)
 de presupuesto de Transparencia Presupuestaria.}
 
 \item{...}{nombre de las variables por las cuales se quiere colapsar
-la información. Estos nombre tienen que estar completamente en minúscula
+la informaci\\u00f3n. Estos nombre tienen que estar completamente en min\\u00fascula
 sin caracteres especiales y separado por guiones bajos. Por ejemplo,
 id_ramo, desc_ramo, id_modalidad, desc_modalidad, etc.}
 }
 \value{
 .xframe colapsado por las variables indicadas. En caso de no
-indicarse ninguna variable, sólo se colapsará por año fiscal.
+indicarse ninguna variable, s\\u00f3lo se colapsar\\u00e1 por a\\u00f1o fiscal.
 }
 \description{
-Esta función retoma la una función sum_pef_tp (por lo cual le aplican las
+Esta funci\\u00f3n retoma la una funci\\u00f3n sum_pef_tp (por lo cual le aplican las
 mismas reglas) y la aplica a una lista de presupuesto. Esto ayuda cuando
-se quiere generar datos históricos del presupuesto en formato wide, los
-cuales normalmente están en diferentes archivos.
+se quiere generar datos hist\\u00f3ricos del presupuesto en formato wide, los
+cuales normalmente est\\u00e1n en diferentes archivos.
 Lo ideal es cargar todos los .xframes de presupuesto en una lista de
 .xframes y seleccionar las variables por las que se quiere acumular la
-información.
-Por ejemplo. Si colocamos un vector de las cuentas públicas de cada año
-fiscal sin señalar ninguna variable, esta función regresará el total
-del presupuesto (sin neteo) de todos los ciclos fiscales incluídos.
-Nota 1: si se acumulan dos .xframes del mismo año fiscal y no de le
-distingue con una variable periodo, esta función sólo señalará el ciclo
+informaci\\u00f3n.
+Por ejemplo. Si colocamos un vector de las cuentas p\\u00fablicas de cada a\\u00f1o
+fiscal sin se\\u00f1alar ninguna variable, esta funci\\u00f3n regresar\\u00e1 el total
+del presupuesto (sin neteo) de todos los ciclos fiscales inclu\\u00eddos.
+Nota 1: si se acumulan dos .xframes del mismo a\\u00f1o fiscal y no de le
+distingue con una variable periodo, esta funci\\u00f3n s\\u00f3lo se\\u00f1alar\\u00e1 el ciclo
 fiscal sin distinguir si son de trimestress diferentes.
-Nota 2: esta función no distingue los cambios de claves y términos a lo
-largo del tiempo. Por ejemplo, si un programa cambió de modalidad U a S,
+Nota 2: esta funci\\u00f3n no distingue los cambios de claves y t\\u00e9rminos a lo
+largo del tiempo. Por ejemplo, si un programa cambi\\u00f3 de modalidad U a S,
 e intentamos agrupar el programa con su modalidad y clave presupuestal,
-la función la va distinguir como un programa diferente. Otro ejemplo es que
-esta función no distingue  los cambios en el tiempo de la en la
-clasificación por objeto del gasto. Si una misma categoría tiene una
+la funci\\u00f3n la va distinguir como un programa diferente. Otro ejemplo es que
+esta funci\\u00f3n no distingue  los cambios en el tiempo de la en la
+clasificaci\\u00f3n por objeto del gasto. Si una misma categor\\u00eda tiene una
 clave o un nombre distinto a lo largo del tiempo y se clasifica el
-presupuesto por estas categorías, la función lo clasificará como
-categorías diferentes.
+presupuesto por estas categor\\u00edas, la funci\\u00f3n lo clasificar\\u00e1 como
+categor\\u00edas diferentes.
 }

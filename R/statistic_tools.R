@@ -1,4 +1,51 @@
-u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
+#' Generar índice con variación entre periodos
+#'
+#' Esa función genera un índice a partir de cambios de un periodo
+#' (ejemplo, de un mes en estadisticas mensuales o de un trimestre
+#' en estadisticas trimestrales)
+#'
+#' @param .x Base de datos tidy
+#' @param col_from Columna que contiene la tasa periodica de cambio (1 = 100)
+#' @param col_to Colúmna que se va a generar con el índice
+#' @param ... Componentes para seleccionar la base 100. Tiene que ser una obs.
+#' @param n_base Base del índice
+#'
+#' @importFrom rlang :=
+#' @importFrom rlang !!
+#' @return Regresa la base de datos con la colúmna con el índice
+#' @export
+variacion_to_index <- function(.x,
+                               col_from,
+                               col_to = index,
+                               ...,
+                               n_base = 100){
+
+  cf <- rlang::enquo(col_from)
+
+  ct <- rlang::enquo(col_to)
+
+  group_vars <- rlang::enquos(...)
+
+  .x <- .x %>%
+    dplyr::mutate(!!ct := ifelse(!!!group_vars,
+                                 n_base, NA))
+
+  while (.x %>%
+         dplyr::filter(!is.na(dplyr::lag(!!cf)) |
+                       !is.na(dplyr::lead(!!cf))) %>%
+         dplyr::pull(!!ct) %>%
+         is.na() %>%
+         any()) {
+
+
+    .x <- .x %>%
+      dplyr::mutate(!!ct := ifelse(!is.na(!!ct),
+                                   !!ct, (dplyr::lag(!!ct)/1)*(1+!!cf)),
+                    !!ct := ifelse(!is.na(!!ct),
+                                   !!ct, (dplyr::lead(!!ct)*1)/(1+dplyr::lead(!!cf))))
+  }
+  return(.x)
+}
 
 #' Indexar o reindexar
 #'
@@ -11,6 +58,8 @@ u <- Sys.setlocale("LC_ALL", "es_ES.UTF-8")
 #' @param n_base Base del índice
 #'
 #' @importFrom magrittr %>%
+#' @importFrom rlang !!
+#' @importFrom rlang :=
 #' @return Regresa la base de datos con la colúmna con el índice
 #' @export
 indexing <- function(.x,
@@ -32,7 +81,7 @@ indexing <- function(.x,
     dplyr::filter(num > 1) %>%
     nrow()
 
-  if (rows > 1) {warning("Se está usando como referencia más de una fila")}
+  if (rows > 1) {warning("Se est\\u00e1 usando como referencia m\\u00e1s de una fila")}
 
   .x <- .x %>%
     dplyr::mutate(!!ct := (!!cf*n_base)/ifelse(sum(ifelse(!!!group_vars ,
@@ -49,61 +98,13 @@ indexing <- function(.x,
 
 }
 
-#' Generar índice combaso en cambio entre periodos
-#'
-#' Esa función genera un índice a partir de cambios de un periodo (ejemplo,
-#' de un mes en estadisticas mensuales o de un trimestre en estadisticas
-#' trimestrales)
-#'
-#' @param .x Base de datos tidy
-#' @param col_from Columna que contiene la tasa periodica de cambio (1 = 100%)
-#' @param col_to Colúmna que se va a generar con el índice
-#' @param ... Componentes para seleccionar la base 100. Tiene que ser una obs.
-#' @param n_base Base del índice
-#'
-#' @importFrom magrittr %>%
-#' @return Regresa la base de datos con la colúmna con el índice
-#' @export
-gen_index <- function(.x,
-                      col_from,
-                      col_to = index,
-                      ...,
-                      n_base = 100){
-
-  cf <- rlang::enquo(col_from)
-
-  ct <- rlang::enquo(col_to)
-
-  group_vars <- rlang::enquos(...)
-
-  .x <- .x %>%
-    dplyr::mutate(!!ct := ifelse(!!!group_vars,
-                                 n_base, NA))
-
-  while (.x %>%
-         dplyr::filter(!is.na(dplyr::lag(!!cf)) |
-                !is.na(dplyr::lead(!!cf))) %>%
-         dplyr::pull(!!ct) %>%
-         is.na() %>%
-         any()) {
-
-
-    .x <- .x %>%
-      dplyr::mutate(!!ct := ifelse(!is.na(!!ct),
-                            !!ct, (dplyr::lag(!!ct)/1)*(1+!!cf)),
-             !!ct := ifelse(!is.na(!!ct),
-                            !!ct, (dplyr::lead(!!ct)*1)/(1+dplyr::lead(!!cf))))
-  }
-  return(.x)
-}
-
 #' Abrevia una entidad
 #'
 #' Transforma un nombre propio de entidad Mexicana en abreviaciones no ambiguas.
 #' Remueve todo caracter especial o acentuado y luego intenta. Si la entidad no
 #' se encuentra regresa NA. Toda referencia a la Republica Federal o Nacion o
-#' Nacional se transformará en "NAC". Oaxaca es un caso especial: cualquier
-#' mencion de "oaxaca" como match de regex en el nombre se identificará con
+#' Nacional se transformar\\u00e1 en "NAC". Oaxaca es un caso especial: cualquier
+#' mencion de "oaxaca" como match de regex en el nombre se identificar\\u00e1 con
 #' "OAX".
 #'
 #' @param entidad Nombre de una entidad
@@ -115,7 +116,7 @@ entidad_to_abr2 <- function(entidad) {
   y <- stringi::stri_replace_all(y, regex = "[:punct:]", "")
   y <- stringr::str_to_title(y)
 
-  case_when(
+  dplyr::case_when(
     y == "Tabasco" ~ "Tab.",
     y == "Nayarit" ~ "Nay.",
     y == "Durango" ~ "Dgo.",
@@ -176,27 +177,29 @@ entidad_to_abr2 <- function(entidad) {
 #' @param date Variable de fechas
 #'
 #' @importFrom magrittr %>%
+#' @importFrom rlang !!
+#' @importFrom rlang :=
 #' @return Regresa la base de datos con la colúmna con el índice
 #' @export
 conect_value <- function(.x,
                          variable,
                          date = NA) {
 
-  variable_e <- enquo(variable)
+  variable_e <- rlang::enquo(variable)
 
-  date_e <- enquo(date)
+  date_e <- rlang::enquo(date)
 
   .x <- .x %>%
-    arrange(!!date_e, .by_group = T) %>%
-    mutate(n = ifelse(!!variable_e != lag(!!variable_e),
+    dplyr::arrange(!!date_e, .by_group = T) %>%
+    dplyr::mutate(n = ifelse(!!variable_e != dplyr::lag(!!variable_e),
                       2, 1),
-           n = lead(n),
-           n = replace_na(n, 1)) %>%
-    uncount(n, .id = "id") %>%
-    mutate(!!variable_e := ifelse(id == 2,
-                                  lead(!!variable_e),
+           n = dplyr::lead(n),
+           n = tidyr::replace_na(n, 1)) %>%
+    tidyr::uncount(n, .id = "id") %>%
+    dplyr::mutate(!!variable_e := ifelse(id == 2,
+                                         dplyr::lead(!!variable_e),
                                   !!variable_e)) %>%
-    select(-id)
+    dplyr::select(-id)
 
   return(.x)
 }

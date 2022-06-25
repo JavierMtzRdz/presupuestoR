@@ -4,10 +4,12 @@
 \alias{gen_clas_eco}
 \title{Generar clasificación económica}
 \usage{
-gen_clas_eco(.x, ..., periodo_col = NA, keep_mensual = T)
+gen_clas_eco(.x, name = clasif_eco)
 }
 \arguments{
 \item{.x}{base de datos de presupuesto}
+
+\item{name}{nombre de la columna con la clasificación económica}
 }
 \value{
 una base de datos de presupuesto con clasificación económica
