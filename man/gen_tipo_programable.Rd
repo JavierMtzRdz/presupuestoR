@@ -2,7 +2,7 @@
 % Please edit documentation in R/analisis_ppto.R
 \name{gen_tipo_programable}
 \alias{gen_tipo_programable}
-\title{Generar col\\u00famna con clasificaci\\u00f3n de programable}
+\title{Generar colúmna con clasificación de programable}
 \usage{
 gen_tipo_programable(.x)
 }
@@ -10,9 +10,9 @@ gen_tipo_programable(.x)
 \item{.x}{base de datos de presupuesto}
 }
 \value{
-una base de datos de presupuesto con clasificaci\\u00f3n del gasto
+una base de datos de presupuesto con clasificación del gasto
 programable y no programable
 }
 \description{
-Generar col\\u00famna con clasificaci\\u00f3n de programable
+Generar colúmna con clasificación de programable
 }

@@ -2,18 +2,18 @@
 % Please edit documentation in R/analisis_ppto.R
 \name{id_ramo_to_tipo_ramo}
 \alias{id_ramo_to_tipo_ramo}
-\title{Convertir clave del ramo a la clasificaci\\u00f3n administrativa de los ramos}
+\title{Convertir clave del ramo a la clasificación administrativa de los ramos}
 \usage{
 id_ramo_to_tipo_ramo(id_ramo)
 }
 \arguments{
-\item{id_ramo}{clave n\\u00famerica del ramo}
+\item{id_ramo}{clave númerica del ramo}
 }
 \value{
-character con la clasificaci\\u00f3n administrativa del ramo
+character con la clasificación administrativa del ramo
 }
 \description{
-Nota 1: esta clasificaci\\u00f3n a la \\u00faltima actualizaci\\u00f3n del a\\u00f1o fiscal.
-Por ejemplo, en esta clasificaci\\u00f3n ya se considera al ramo 49 (FGR)
-como parte de los ramos aut\\u00f3nomos.
+Nota 1: esta clasificación a la última actualización del año fiscal.
+Por ejemplo, en esta clasificación ya se considera al ramo 49 (FGR)
+como parte de los ramos autónomos.
 }

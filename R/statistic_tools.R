@@ -81,7 +81,7 @@ indexing <- function(.x,
     dplyr::filter(num > 1) %>%
     nrow()
 
-  if (rows > 1) {warning("Se est\\u00e1 usando como referencia m\\u00e1s de una fila")}
+  if (rows > 1) {warning("Se est\u00e1 usando como referencia m\u00e1s de una fila")}
 
   .x <- .x %>%
     dplyr::mutate(!!ct := (!!cf*n_base)/ifelse(sum(ifelse(!!!group_vars ,
@@ -103,8 +103,8 @@ indexing <- function(.x,
 #' Transforma un nombre propio de entidad Mexicana en abreviaciones no ambiguas.
 #' Remueve todo caracter especial o acentuado y luego intenta. Si la entidad no
 #' se encuentra regresa NA. Toda referencia a la Republica Federal o Nacion o
-#' Nacional se transformar\\u00e1 en "NAC". Oaxaca es un caso especial: cualquier
-#' mencion de "oaxaca" como match de regex en el nombre se identificar\\u00e1 con
+#' Nacional se transformará en "NAC". Oaxaca es un caso especial: cualquier
+#' mencion de "oaxaca" como match de regex en el nombre se identificará con
 #' "OAX".
 #'
 #' @param entidad Nombre de una entidad

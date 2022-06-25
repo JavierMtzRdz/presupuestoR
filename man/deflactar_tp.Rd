@@ -24,5 +24,6 @@ paquete el 24 de junio de 2022 ("local") o se descarga el último archivo
 regresa un vector de los montos deflactados
 }
 \description{
-Esa funci\\u00f3n deflacta montos descargando la \\u00faltima versi\\u00f3n de deflactores publicada por Transparencia presupuestaria.
+Esa función deflacta montos descargando la última versión de deflactores
+publicada por Transparencia presupuestaria.
 }

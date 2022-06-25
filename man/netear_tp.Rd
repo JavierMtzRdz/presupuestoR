@@ -10,20 +10,20 @@ netear_tp(.x, ..., keep_mensual = T)
 \item{.x}{.xframe con la estructura de los datos abiertos de
 presupuesto de Transparencia Presupuestaria.}
 
-\item{...}{modificaci\\u00f3n y creaci\\u00f3n de variables equivalente a dplyr::mutate}
+\item{...}{modificación y creación de variables equivalente a dplyr::mutate}
 
 \item{keep_mensual}{indicador lógico para determinar si mantener la variables de aprobado
 y modificado en el periodo (en caso de estar diponible)}
 }
 \value{
-.xframe cuya descripci\\u00f3n de ramo indica los casos en que esa
-categor\\u00eda del gasto debe ser neteada.
+.xframe cuya descripción de ramo indica los casos en que esa
+categoría del gasto debe ser neteada.
 }
 \description{
-Esta funci\\u00f3n pretende clasificar categor\\u00eda del presupuesto que deben ser
-neteadas en caso de realizarse un an\\u00e1lisis del presupuesto neto. Esta
-clasificaci\\u00f3n la realiza sobre archivos presupuestales con la estructura
+Esta función pretende clasificar categoría del presupuesto que deben ser
+neteadas en caso de realizarse un análisis del presupuesto neto. Esta
+clasificación la realiza sobre archivos presupuestales con la estructura
 de los datos de presupuesto abierto de Transparencia Presupuestaria.
-Ojo: esta funci\\u00f3n a\\u00fan est\\u00e1 en desarrollo y, hasta ahora, el neteo s\\u00f3lo
+Ojo: esta función aún está en desarrollo y, hasta ahora, el neteo sólo
 es correcto aplicado al presupuesto aprobado.
 }

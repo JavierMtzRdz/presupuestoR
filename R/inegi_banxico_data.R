@@ -98,7 +98,7 @@ deflactar_inpc <- function(monto, year_monto, year_out,
 
   if (class(deflactor_out) == "try-error") {
 
-    warning("Error en el a\\u00f1o del monto deflactado. La cifra no fue deflactada.")
+    warning("Error en el a\u00f1o del monto deflactado. La cifra no fue deflactada.")
 
     return(monto)
   }
@@ -108,7 +108,7 @@ deflactar_inpc <- function(monto, year_monto, year_out,
                          silent = T)
 
   if (class(deflactor_monto) == "try-error") {
-    warning("Error en el a\\u00f1o al que se va a deflactar. La cifra no fue deflactada.")
+    warning("Error en el a\u00f1o al que se va a deflactar. La cifra no fue deflactada.")
 
     return(monto)
   }
