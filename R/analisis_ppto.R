@@ -25,6 +25,10 @@ deflactar_tp <- function(monto, year_monto, year_out,
 
   monto <- as.numeric(monto)
 
+  if (fuente == "CP2021") {
+    deflactor <- CP2021
+  }
+
   if (fuente == "cargar" &
       (!exists("deflactor_desc") ||
       !(c("year") %in% colnames(deflactor)) ||
@@ -2011,6 +2015,15 @@ gen_subclas_eco <- function (.x,
 #' @source Datos de TP disponibles en https://www.transparenciapresupuestaria.gob.mx/work/models/PTP/Presupuesto/Programacion/Deflactores/Deflactores_PIB.xlsx
 "deflactor_local"
 
+#' Datos del deflactor para la CP de 2021
+#'
+#' Son los datos del deflactor implícito del PIB, observados y estimados
+#' de la SHCP.
+#'
+#' @format Data Frame
+#' @source Datos del deflactor del PIB de la SHCP disponibles en los Lineamientos para la Integración de la Cuenta Pública 2021 (https://www.cuentapublica.hacienda.gob.mx/es/CP/cuenta)
+"CP2021"
+
 globalVariables(c(".", "deflactor_local", "periodo",
                   "n", "id", "inpc_bd",
                   "year", "sp1", "deflactor_year",
@@ -2023,4 +2036,5 @@ globalVariables(c(".", "deflactor_local", "periodo",
                   "modificado", "pagado", "ejercido",
                   "proyecto", "monto_aprob_mes", "monto_aprobado_mensual",
                   "monto_modif_mes", "monto_modificado_mensual", "desc_objeto_del_gasto",
-                  "monto_aprobado_mensual", "desc_ramo"))
+                  "monto_aprobado_mensual", "desc_ramo",
+                  "inpc_bd"))

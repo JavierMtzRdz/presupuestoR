@@ -27,6 +27,8 @@ deflactar_inpc <- function(monto, year_monto, year_out,
 
     utils::download.file(inpc_ur, destfile = temp, mode = 'wb')
 
+    rlang::env_unlock(as.environment("package:presupuestoR"))
+
     assign("inpc_bd",
            XML::htmlParse(temp) %>%
              XML::getNodeSet('//table') %>%
@@ -40,6 +42,8 @@ deflactar_inpc <- function(monto, year_monto, year_out,
                               year = as.numeric(year),
                               inpc = as.numeric(sp1)),
            envir = as.environment("package:presupuestoR"))
+
+    rlang::env_lock(as.environment("package:presupuestoR"))
 
   }
 
