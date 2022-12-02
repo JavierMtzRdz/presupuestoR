@@ -1192,7 +1192,7 @@ bind_pef_tp_wide <- function(lista_df, ...) {
     tidyr::pivot_wider(
       names_from = periodo,
       values_from = dplyr::contains(
-        c(
+        c("proyecto", 
           "aprobado",
           "modificado",
           "pagado",
@@ -2027,6 +2027,7 @@ gen_subclas_eco <- function (.x,
 globalVariables(c(".", "deflactor_local", "periodo",
                   "n", "id", "inpc_bd",
                   "year", "sp1", "deflactor_year",
+                  "CP2021",
                   "deflactor_desc", "clasif_eco", "id_ramo",
                   "ciclo", "id_capitulo", "id_objeto_del_gasto",
                   "id_concepto", "id_partida_especifica", "id_partida_generica",
