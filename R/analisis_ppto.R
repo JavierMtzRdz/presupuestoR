@@ -1087,6 +1087,8 @@ sum_pef_tp <- function(.x, ...,
     dplyr::rename(
       proyecto = dplyr::contains(c("proyec")),
       aprobado = dplyr::contains(c("aprobado")),
+      aprobado = dplyr::contains(c("monto_pef")),
+      aprobado = dplyr::matches(c("^importe$")),
       modificado = dplyr::contains("modificado"),
       pagado = dplyr::contains("pagado"),
       ejercido = dplyr::contains(c("ejercido", "ejercicio"))
