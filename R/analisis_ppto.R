@@ -8,10 +8,13 @@
 #' entre 1994 y 2030)
 #' @param year_out año del precio al que se quiere deflactar (para que funciones tiene que ser
 #' entre 1994 y 2030)
-#' @param fuente aquí se indica si se quiere tomar el deflactor que se guardó en el
-#' paquete el 24 de junio de 2022 ("local") o se descarga el último archivo
-#'  ("cargar"). TP lo actualiza posterior a la presentación de la estructura programática
-#'  y el PPEF.
+#' @param fuente aquí se indica si se quiere tomar el deflactor que se guardó 
+#' en el paquete el 24 de junio de 2022 ("local") o se descarga el último
+#' archivo ("cargar"). TP lo actualiza posterior a la presentación de 
+#' la estructura programática y el PPEF. También pueden ser "CP2021" o "CP2022" 
+#' para utilizar los deflactores utilizados para las cuentas públicas
+#' correspondientes. Cabe destacar que en este último caso no hay 
+#' datos para después del ciclo correspondiente.
 #'
 #' @importFrom magrittr %>%
 #' @return regresa un vector de los montos deflactados
@@ -27,6 +30,10 @@ deflactar_tp <- function(monto, year_monto, year_out,
 
   if (fuente == "CP2021") {
     deflactor <- CP2021
+  }
+  
+  if (fuente == "CP2022") {
+    deflactor <- CP2022
   }
 
   if (fuente == "cargar" &
@@ -2026,10 +2033,19 @@ gen_subclas_eco <- function (.x,
 #' @source Datos del deflactor del PIB de la SHCP disponibles en los Lineamientos para la Integración de la Cuenta Pública 2021 (https://www.cuentapublica.hacienda.gob.mx/es/CP/cuenta)
 "CP2021"
 
+#' Datos del deflactor utilizados en la CP de 2022
+#'
+#' Son los datos del deflactor implícito del PIB, observados y estimados
+#' de la SHCP.
+#'
+#' @format Data Frame
+#' @source Datos del deflactor del PIB de la SHCP disponibles en los Lineamientos para la Integración de la Cuenta Pública 2022 (https://www.cuentapublica.hacienda.gob.mx/es/CP/cuenta)
+"CP2022"
+
 globalVariables(c(".", "deflactor_local", "periodo",
                   "n", "id", "inpc_bd",
                   "year", "sp1", "deflactor_year",
-                  "CP2021",
+                  "CP2021", "CP2022", 
                   "deflactor_desc", "clasif_eco", "id_ramo",
                   "ciclo", "id_capitulo", "id_objeto_del_gasto",
                   "id_concepto", "id_partida_especifica", "id_partida_generica",

@@ -15,10 +15,13 @@ entre 1994 y 2030)}
 \item{year_out}{año del precio al que se quiere deflactar (para que funciones tiene que ser
 entre 1994 y 2030)}
 
-\item{fuente}{aquí se indica si se quiere tomar el deflactor que se guardó en el
-paquete el 24 de junio de 2022 ("local") o se descarga el último archivo
- ("cargar"). TP lo actualiza posterior a la presentación de la estructura programática
- y el PPEF.}
+\item{fuente}{aquí se indica si se quiere tomar el deflactor que se guardó 
+en el paquete el 24 de junio de 2022 ("local") o se descarga el último
+archivo ("cargar"). TP lo actualiza posterior a la presentación de 
+la estructura programática y el PPEF. También pueden ser "CP2021" o "CP2022" 
+para utilizar los deflactores utilizados para las cuentas públicas
+correspondientes. Cabe destacar que en este último caso no hay 
+datos para después del ciclo correspondiente.}
 }
 \value{
 regresa un vector de los montos deflactados
