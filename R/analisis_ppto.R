@@ -1638,7 +1638,7 @@ desc_ramo_to_abr_ramo <- function(desc_ramo) {
     stringr::str_detect(y, "AGRICULTURA Y DESARROLLO RURAL") ~ "Sader",
     stringr::str_detect(y, "COMUNICACIONES Y TRANSPORTES") ~ "SCT",
     stringr::str_detect(y, "ECONOMIA") ~ "SE",
-    stringr::str_detect(y, "EDUCACION") ~ "SEP",
+    stringr::str_detect(y, "EDUCACION PUBLICA") ~ "SEP",
     stringr::str_detect(y, "SALUD") ~ "SSA",
     stringr::str_detect(y, "MARINA") ~ "Semar",
     stringr::str_detect(y, "TRABAJO Y PREVISION SOCIAL") ~ "STPS",
