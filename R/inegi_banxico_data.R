@@ -100,7 +100,7 @@ deflactar_inpc <- function(monto, year_monto, year_out,
                                       function(x) as.numeric(inpc[x == inpc$fecha,]$inpc)),
                        silent = T)
 
-  if (class(deflactor_out) == "try-error") {
+  if (inherits(class(deflactor_out), "try-error")) {
 
     warning("Error en el a\u00f1o del monto deflactado. La cifra no fue deflactada.")
 
@@ -111,7 +111,7 @@ deflactar_inpc <- function(monto, year_monto, year_out,
                                         function(x) as.numeric(inpc[x == inpc$fecha,]$inpc)),
                          silent = T)
 
-  if (class(deflactor_monto) == "try-error") {
+  if (inherits(class(deflactor_monto), "try-error")) {
     warning("Error en el a\u00f1o al que se va a deflactar. La cifra no fue deflactada.")
 
     return(monto)

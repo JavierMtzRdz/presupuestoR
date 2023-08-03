@@ -74,7 +74,7 @@ deflactar_tp <- function(monto, year_monto, year_out,
                                         deflactor[deflactor$year %in% as.numeric(x),]$deflactor_year),
                        silent = T)
 
-  if (class(deflactor_out) == "try-error") {
+  if (inherits(class(deflactor_out), "try-error")) {
 
     warning("Error en el a\u00f1o del monto deflactado. La cifra no fue deflactada.")
 
@@ -86,7 +86,7 @@ deflactar_tp <- function(monto, year_monto, year_out,
                                           deflactor[deflactor$year %in% as.numeric(x),]$deflactor_year),
                          silent = T)
 
-  if (class(deflactor_monto) == "try-error") {
+  if (inherits(class(deflactor_monto), "try-error")) {
     warning("Error en el a\u00f1o al que se va a deflactar. La cifra no fue deflactada.")
 
     return(monto)
@@ -1458,23 +1458,25 @@ negative_neteo_tp <- function(.x) {
 #' @export
 id_ramo_to_tipo_ramo <- function(id_ramo) {
 
-  y <- as.numeric(id_ramo)
+  y <- as.character(id_ramo)
 
   dplyr::case_when(
-    y %in% c(1, 3, 22, 35,
-                   41, 42, 43, 49, # TODO: cechar los casos en que el año hace variar la calsificacin.
-                   44, 40, 32) ~ "A. Ramos aut\u00f3nomos",
-    y %in% c(2, 4, 5, 6,
-                   7, 8, 9, 10,
-                   11, 12, 13, 14,
-                   15, 16, 17, 18,
-                   20, 21, 27, 31,
-                   36, 37, 38, 45,
-                   46, 47, 48) ~ "B. Ramos administrativos",
-    y %in% c(19, 23, 25, 33,
-                   24, 28, 29, 30, 34) ~ "C. Ramos generales",
-    y %in% c(50, 51) ~ "D. Entidades sujetas a control presupuestario directo",
-    y %in% c(52, 53) ~ "E. Empresas productivas del estado",
+    y %in% c("1", "3", "22", "35",
+                   "41", "42", "43", "49", # TODO: cechar los casos en que el año hace variar la calsificacin.
+                   "44", "40", "32") ~ "A. Ramos aut\u00f3nomos",
+    y %in% c("2", "4", "5", "6",
+                   "7", "8", "9", "10",
+                   "11", "12", "13", "14",
+                   "15", "16", "17", "18",
+                   "20", "21", "27", "31",
+                   "36", "37", "38", "45",
+                   "46", "47", "48") ~ "B. Ramos administrativos",
+    y %in% c("19", "23", "25", "33",
+                   "24", "28", "29", "30", "34") ~ "C. Ramos generales",
+    y %in% c("50", "51",
+             "GYN", "GYR") ~ "D. Entidades sujetas a control presupuestario directo",
+    y %in% c("52", "53",
+             "TZZ", "TOQ") ~ "E. Empresas productivas del estado",
     T ~ NA_character_
   )
 }
