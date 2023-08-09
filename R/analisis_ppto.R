@@ -1512,6 +1512,7 @@ id_ramo_to_desc_ramo <- function(id_ramo) {
     y == "14" ~	"Trabajo y Previsi\u00f3n Social",
     y == "15" ~	"Desarrollo Agrario, Territorial y Urbano",
     y == "16" ~	"Medio Ambiente y Recursos Naturales",
+    y == "17" ~	"Procuradur\u00eda General de la Rep\u00fablica",
     y == "18" ~	"Energ\u00eda",
     y == "19" ~	"Aportaciones a Seguridad Social",
     y == "20" ~	"Bienestar",
