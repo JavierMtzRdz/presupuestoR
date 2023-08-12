@@ -167,6 +167,60 @@ entidad_to_abr2 <- function(entidad) {
 }
 
 
+#' Clave INEGI a entidad
+#'
+#' Transforma las claves de INEGI correspondientes a cada entidad Mexicana en
+#' nus nombres cortos. Si la clave no se encuentra regresa NA. Toda referencia a 
+#' la Republica Federal o Nacion o Nacional se transformará en "Nacional" y
+#' corresponderá a la clave 00..
+#'
+#' @param entidad Nombre de una entidad
+#' @return un vector de caracteres de tamaño 3 de entidades de México no
+#' ambiguas
+#' @export
+entidad_to_abr2 <- function(entidad) {
+  y <- as.numeric(entidad,"latin-ascii" )
+  y <- sprintf("%02d", y)
+  
+  dplyr::case_when(
+    y == "00" ~ "Nacional",
+    y == "01" ~ "Aguascalientes",
+    y == "02" ~ "Baja California",
+    y == "03" ~ "Baja California Sur",
+    y == "04" ~ "Campeche",
+    y == "05" ~ "Coahuila",
+    y == "06" ~ "Colima",
+    y == "07" ~ "Chiapas",
+    y == "08" ~ "Chihuahua",
+    y == "09" ~ "Ciudad de M\u00e9xico",
+    y == "10" ~ "Durango",
+    y == "11" ~ "Guanajuato",
+    y == "12" ~ "Guerrero",
+    y == "13" ~ "Hidalgo",
+    y == "14" ~ "Jalisco",
+    y == "15" ~ "M\u00e9xico",
+    y == "16" ~ "Michoac\u00e1n",
+    y == "17" ~ "Morelos",
+    y == "18" ~ "Nayarit",
+    y == "19" ~ "Nuevo Le\u00f3n",
+    y == "20" ~ "Oaxaca",
+    y == "21" ~ "Puebla",
+    y == "22" ~ "Quer\u00e9taro",
+    y == "23" ~ "Quintana Roo",
+    y == "24" ~ "San Luis Potos\u00ed",
+    y == "25" ~ "Sinaloa",
+    y == "26" ~ "Sonora",
+    y == "27" ~ "Tabasco",
+    y == "28" ~ "Tamaulipas",
+    y == "29" ~ "Tlaxcala",
+    y == "30" ~ "Veracruz",
+    y == "31" ~ "Yucat\u00e1n",
+    y == "32" ~ "Zacatecas",
+    T ~ y
+  )
+}
+
+
 #' Generar generar valor anterior para conectar líneas
 #'
 #' Esa función duplica el último valor de una serie integrando la categoría
