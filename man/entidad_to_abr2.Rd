@@ -5,16 +5,11 @@
 \title{Abrevia una entidad}
 \usage{
 entidad_to_abr2(entidad)
-
-entidad_to_abr2(entidad)
 }
 \arguments{
 \item{entidad}{Nombre de una entidad}
 }
 \value{
-un vector de caracteres de tamaño 3 de entidades de México no
-ambiguas
-
 un vector de caracteres de tamaño 3 de entidades de México no
 ambiguas
 }
@@ -25,9 +20,4 @@ se encuentra regresa NA. Toda referencia a la Republica Federal o Nacion o
 Nacional se transformará en "NAC". Oaxaca es un caso especial: cualquier
 mencion de "oaxaca" como match de regex en el nombre se identificará con
 "OAX".
-
-Transforma las claves de INEGI correspondientes a cada entidad Mexicana en
-nus nombres cortos. Si la clave no se encuentra regresa NA. Toda referencia a 
-la Republica Federal o Nacion o Nacional se transformará en "Nacional" y
-corresponderá a la clave 00..
 }
