@@ -2027,7 +2027,8 @@ gen_subclas_eco <- function (.x,
 
     }
 
-  }
+}
+
 
 #' Datos del deflactor de TP
 #'
@@ -2071,3 +2072,8 @@ globalVariables(c(".", "deflactor_local", "periodo",
                   "monto_modif_mes", "monto_modificado_mensual", "desc_objeto_del_gasto",
                   "monto_aprobado_mensual", "desc_ramo",
                   "inpc_bd"))
+
+
+
+
+

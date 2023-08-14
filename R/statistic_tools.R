@@ -174,7 +174,7 @@ entidad_to_abr2 <- function(entidad) {
 #' la Republica Federal o Nacion o Nacional se transformará en "Nacional" y
 #' corresponderá a la clave 00..
 #'
-#' @param cve_to_ent Nombre de una entidad
+#' @param cve_ent Nombre de una entidad
 #' @return un vector de caracteres de tamaño 3 de entidades de México no
 #' ambiguas
 #' @export
