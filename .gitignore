@@ -276,3 +276,5 @@ TSWLatexianTemp*
 
 # DS_store
 .DS_store
+inst/doc
+.Rproj.user

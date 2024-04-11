@@ -8,10 +8,11 @@
 #' entre 1994 y 2030)
 #' @param year_out año del precio al que se quiere deflactar (para que funciones tiene que ser
 #' entre 1994 y 2030)
-#' @param fuente aquí se indica si se quiere tomar el deflactor que se guardó en el
-#' paquete el 24 de junio de 2022 ("local") o se descarga el último archivo
-#'  ("cargar"). TP lo actualiza posterior a la presentación de la estructura programática
-#'  y el PPEF.
+#' @param fuente aquí se indica si se quiere tomar el deflactor actualizado 
+#' por la SHCP para 2024 base 2018 ("local") o se descarga el último
+#' archivo ("cargar"). También pueden ser "CP2021" o "CP2022" 
+#' para utilizar los deflactores utilizados para las cuentas públicas
+#' correspondientes. 
 #'
 #' @importFrom magrittr %>%
 #' @return regresa un vector de los montos deflactados
@@ -27,6 +28,10 @@ deflactar_tp <- function(monto, year_monto, year_out,
 
   if (fuente == "CP2021") {
     deflactor <- CP2021
+  }
+  
+  if (fuente == "CP2022") {
+    deflactor <- CP2022
   }
 
   if (fuente == "cargar" &
@@ -67,7 +72,7 @@ deflactar_tp <- function(monto, year_monto, year_out,
                                         deflactor[deflactor$year %in% as.numeric(x),]$deflactor_year),
                        silent = T)
 
-  if (class(deflactor_out) == "try-error") {
+  if (inherits(class(deflactor_out), "try-error")) {
 
     warning("Error en el a\u00f1o del monto deflactado. La cifra no fue deflactada.")
 
@@ -79,7 +84,7 @@ deflactar_tp <- function(monto, year_monto, year_out,
                                           deflactor[deflactor$year %in% as.numeric(x),]$deflactor_year),
                          silent = T)
 
-  if (class(deflactor_monto) == "try-error") {
+  if (inherits(class(deflactor_monto), "try-error")) {
     warning("Error en el a\u00f1o al que se va a deflactar. La cifra no fue deflactada.")
 
     return(monto)
@@ -1087,6 +1092,8 @@ sum_pef_tp <- function(.x, ...,
     dplyr::rename(
       proyecto = dplyr::contains(c("proyec")),
       aprobado = dplyr::contains(c("aprobado")),
+      aprobado = dplyr::contains(c("monto_pef")),
+      aprobado = dplyr::matches(c("^importe$")),
       modificado = dplyr::contains("modificado"),
       pagado = dplyr::contains("pagado"),
       ejercido = dplyr::contains(c("ejercido", "ejercicio"))
@@ -1192,7 +1199,7 @@ bind_pef_tp_wide <- function(lista_df, ...) {
     tidyr::pivot_wider(
       names_from = periodo,
       values_from = dplyr::contains(
-        c(
+        c("proyecto", 
           "aprobado",
           "modificado",
           "pagado",
@@ -1449,23 +1456,25 @@ negative_neteo_tp <- function(.x) {
 #' @export
 id_ramo_to_tipo_ramo <- function(id_ramo) {
 
-  y <- as.numeric(id_ramo)
+  y <- as.character(id_ramo)
 
   dplyr::case_when(
-    y %in% c(1, 3, 22, 35,
-                   41, 42, 43, 49, # TODO: cechar los casos en que el año hace variar la calsificacin.
-                   44, 40, 32) ~ "A. Ramos aut\u00f3nomos",
-    y %in% c(2, 4, 5, 6,
-                   7, 8, 9, 10,
-                   11, 12, 13, 14,
-                   15, 16, 17, 18,
-                   20, 21, 27, 31,
-                   36, 37, 38, 45,
-                   46, 47, 48) ~ "B. Ramos administrativos",
-    y %in% c(19, 23, 25, 33,
-                   24, 28, 29, 30, 34) ~ "C. Ramos generales",
-    y %in% c(50, 51) ~ "D. Entidades sujetas a control presupuestario directo",
-    y %in% c(52, 53) ~ "E. Empresas productivas del estado",
+    y %in% c("1", "3", "22", "35",
+                   "41", "42", "43", "49", # TODO: cechar los casos en que el año hace variar la calsificacin.
+                   "44", "40", "32") ~ "Ramos aut\u00f3nomos",
+    y %in% c("2", "4", "5", "6",
+                   "7", "8", "9", "10",
+                   "11", "12", "13", "14",
+                   "15", "16", "17", "18",
+                   "20", "21", "27", "31",
+                   "36", "37", "38", "45",
+                   "46", "47", "48") ~ "Ramos administrativos",
+    y %in% c("19", "23", "25", "33",
+                   "24", "28", "29", "30", "34") ~ "Ramos generales",
+    y %in% c("50", "51",
+             "GYN", "GYR") ~ "Entidades sujetas a control presupuestario directo",
+    y %in% c("52", "53",
+             "TZZ", "TOQ") ~ "Empresas productivas del estado",
     T ~ NA_character_
   )
 }
@@ -1482,57 +1491,63 @@ id_ramo_to_tipo_ramo <- function(id_ramo) {
 #' @export
 id_ramo_to_desc_ramo <- function(id_ramo) {
 
-  y <- as.numeric(id_ramo)
+  y <- as.character(id_ramo)
 
   dplyr::case_when(
-    y == 1 ~  "Poder Legislativo",
-    y == 2 ~  "Oficina de la Presidencia de la Rep\u00fablica",
-    y == 3 ~  "Poder Judicial",
-    y == 4 ~  "Gobernaci\u00f3n",
-    y == 5 ~  "Relaciones Exteriores",
-    y == 6 ~  "Hacienda y Cr\u00e9dito P\u00fablico",
-    y == 7 ~  "Defensa Nacional",
-    y == 8 ~  "Agricultura y Desarrollo Rural",
-    y == 9 ~  "Comunicaciones y Transportes",
-    y == 10 ~	"Econom\u00eda",
-    y == 11 ~	"Educaci\u00f3n P\u00fablica",
-    y == 12 ~	"Salud",
-    y == 13 ~	"Marina",
-    y == 14 ~	"Trabajo y Previsi\u00f3n Social",
-    y == 15 ~	"Desarrollo Agrario, Territorial y Urbano",
-    y == 16 ~	"Medio Ambiente y Recursos Naturales",
-    y == 18 ~	"Energ\u00eda",
-    y == 19 ~	"Aportaciones a Seguridad Social",
-    y == 20 ~	"Bienestar",
-    y == 21 ~	"Turismo",
-    y == 22 ~	"Instituto Nacional Electoral",
-    y == 23 ~	"Provisiones Salariales y Econ\u00f3micas",
-    y == 24 ~	"Deuda P\u00fablica",
-    y == 25 ~	"Previsiones y Aportaciones para los Sistemas de Educaci\u00f3n B\u00e1sica, Normal, Tecnol\u00f3gica y de Adultos",
-    y == 27 ~	"Funci\u00f3n P\u00fablica",
-    y == 28 ~	"Participaciones a Entidades Federativas y Municipios",
-    y == 30 ~	"Adeudos de Ejercicios Fiscales Anteriores",
-    y == 31 ~	"Tribunales Agrarios",
-    y == 32 ~	"Tribunal Federal de Justicia Administrativa",
-    y == 33 ~	"Aportaciones Federales para Entidades Federativas y Municipios",
-    y == 34 ~	"Erogaciones para los Programas de Apoyo a Ahorradores y Deudores de la Banca",
-    y == 35 ~	"Comisi\u00f3n Nacional de los Derechos Humanos",
-    y == 36 ~	"Seguridad y Protecci\u00f3n Ciudadana",
-    y == 37 ~	"Consejer\u00eda Jur\u00eddica del Ejecutivo Federal",
-    y == 38 ~	"Consejo Nacional de Ciencia y Tecnolog\u00eda",
-    y == 40 ~	"Informaci\u00f3n Nacional Estad\u00edstica y Geogr\u00e1fica",
-    y == 41 ~	"Comisi\u00f3n Federal de Competencia Econ\u00f3mica",
-    y == 43 ~	"Instituto Federal de Telecomunicaciones",
-    y == 44 ~	"Instituto Nacional de Transparencia, Acceso a la Informaci\u00f3n y Protecci\u00f3n de Datos Personales",
-    y == 45 ~	"Comisi\u00f3n Reguladora de Energ\u00eda",
-    y == 46 ~	"Comisi\u00f3n Nacional de Hidrocarburos",
-    y == 47 ~	"Entidades no Sectorizadas",
-    y == 48 ~	"Cultura",
-    y == 49 ~	"Fiscal\u00eda General de la Rep\u00fablica",
-    y == 50 ~	"Instituto Mexicano del Seguro Social",
-    y == 51 ~	"Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado",
-    y == 52 ~	"Petr\u00f3leos Mexicanos",
-    y == 53 ~	"Comisi\u00f3n Federal de Electricidad",
+    y == "1" ~  "Poder Legislativo",
+    y == "2" ~  "Oficina de la Presidencia de la Rep\u00fablica",
+    y == "3" ~  "Poder Judicial",
+    y == "4" ~  "Gobernaci\u00f3n",
+    y == "5" ~  "Relaciones Exteriores",
+    y == "6" ~  "Hacienda y Cr\u00e9dito P\u00fablico",
+    y == "7" ~  "Defensa Nacional",
+    y == "8" ~  "Agricultura y Desarrollo Rural",
+    y == "9" ~  "Comunicaciones y Transportes",
+    y == "10" ~	"Econom\u00eda",
+    y == "11" ~	"Educaci\u00f3n P\u00fablica",
+    y == "12" ~	"Salud",
+    y == "13" ~	"Marina",
+    y == "14" ~	"Trabajo y Previsi\u00f3n Social",
+    y == "15" ~	"Desarrollo Agrario, Territorial y Urbano",
+    y == "16" ~	"Medio Ambiente y Recursos Naturales",
+    y == "17" ~	"Procuradur\u00eda General de la Rep\u00fablica",
+    y == "18" ~	"Energ\u00eda",
+    y == "19" ~	"Aportaciones a Seguridad Social",
+    y == "20" ~	"Bienestar",
+    y == "21" ~	"Turismo",
+    y == "22" ~	"Instituto Nacional Electoral",
+    y == "23" ~	"Provisiones Salariales y Econ\u00f3micas",
+    y == "24" ~	"Deuda P\u00fablica",
+    y == "25" ~	"Previsiones y Aportaciones para los Sistemas de Educaci\u00f3n B\u00e1sica, Normal, Tecnol\u00f3gica y de Adultos",
+    y == "27" ~	"Funci\u00f3n P\u00fablica",
+    y == "28" ~	"Participaciones a Entidades Federativas y Municipios",
+    y == "30" ~	"Adeudos de Ejercicios Fiscales Anteriores",
+    y == "31" ~	"Tribunales Agrarios",
+    y == "32" ~	"Tribunal Federal de Justicia Administrativa",
+    y == "33" ~	"Aportaciones Federales para Entidades Federativas y Municipios",
+    y == "34" ~	"Erogaciones para los Programas de Apoyo a Ahorradores y Deudores de la Banca",
+    y == "35" ~	"Comisi\u00f3n Nacional de los Derechos Humanos",
+    y == "36" ~	"Seguridad y Protecci\u00f3n Ciudadana",
+    y == "37" ~	"Consejer\u00eda Jur\u00eddica del Ejecutivo Federal",
+    y == "38" ~	"Consejo Nacional de Ciencia y Tecnolog\u00eda",
+    y == "40" ~	"Informaci\u00f3n Nacional Estad\u00edstica y Geogr\u00e1fica",
+    y == "41" ~	"Comisi\u00f3n Federal de Competencia Econ\u00f3mica",
+    y == "42" ~	"Instituto Nacional para la Evaluaci\u00f3n de la Educaci\u00f3n",
+    y == "43" ~	"Instituto Federal de Telecomunicaciones",
+    y == "44" ~	"Instituto Nacional de Transparencia, Acceso a la Informaci\u00f3n y Protecci\u00f3n de Datos Personales",
+    y == "45" ~	"Comisi\u00f3n Reguladora de Energ\u00eda",
+    y == "46" ~	"Comisi\u00f3n Nacional de Hidrocarburos",
+    y == "47" ~	"Entidades no Sectorizadas",
+    y == "48" ~	"Cultura",
+    y == "49" ~	"Fiscal\u00eda General de la Rep\u00fablica",
+    y == "50" ~	"Instituto Mexicano del Seguro Social",
+    y == "GYR" ~	"Instituto Mexicano del Seguro Social",
+    y == "51" ~	"Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado",
+    y == "GYN" ~	"Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado",
+    y == "52" ~	"Petr\u00f3leos Mexicanos",
+    y == "TZZ" ~	"Petr\u00f3leos Mexicanos",
+    y == "53" ~	"Comisi\u00f3n Federal de Electricidad",
+    y == "TOQ" ~	"Comisi\u00f3n Federal de Electricidad",
     T ~ NA_character_
   )
 }
@@ -1550,57 +1565,63 @@ id_ramo_to_desc_ramo <- function(id_ramo) {
 #' @export
 id_ramo_to_abr_ramo <- function(id_ramo) {
 
-  y <- as.numeric(id_ramo)
+  y <- as.character(id_ramo)
 
   dplyr::case_when(
-    y == 1	~ "P. Legislativo",
-    y == 2	~ "OPR",
-    y == 3	~ "P. Judicial",
-    y == 4	~ "Segob",
-    y == 5	~ "SRE",
-    y == 6	~ "SHCP",
-    y == 7	~ "Sedena",
-    y == 8	~ "Sader",
-    y == 9	~ "SCT",
-    y == 10	~ "SE",
-    y == 11	~ "SEP",
-    y == 12	~ "SSA",
-    y == 13	~ "Semar",
-    y == 14	~ "STPS",
-    y == 15	~ "Sedatu",
-    y == 16	~ "Semarnat",
-    y == 18	~ "Sener",
-    y == 19	~ "Aport. a la SS.",
-    y == 20	~ "Bienestar",
-    y == 21	~ "Sectur",
-    y == 22	~ "INE",
-    y == 23	~ "Prov. Salariales y Econ.",
-    y == 24	~ "Deuda P\u00fablica",
-    y == 25	~ "Prev. y Aport. a la Educ.",
-    y == 27	~ "SFP",
-    y == 28	~ "Participaciones Fed. para Ent. y Mun.",
-    y == 30	~ "Adefas",
-    y == 31	~ "Trib. Agra.",
-    y == 32	~ "TFJA",
-    y == 33	~ "Aportaciones Fed. para Ent. y Mun.",
-    y == 34	~ "Erog. para Prog. de Apoyo a Ahorradores y Deudores de la Banca",
-    y == 35	~ "CNDH",
-    y == 36	~ "SSPC",
-    y == 37	~ "CJEF",
-    y == 38	~ "Conacyt",
-    y == 40	~ "INEGI",
-    y == 41	~ "Cofece",
-    y == 43	~ "IFT",
-    y == 44	~ "INAI",
-    y == 45	~ "CRE",
-    y == 46	~ "CNH",
-    y == 47	~ "Ent. no sect.",
-    y == 48	~ "Cultura",
-    y == 49	~ "FGR",
-    y == 50	~ "IMSS",
-    y == 51	~ "ISSSTE",
-    y == 52	~ "Pemex",
-    y == 53	~ "CFE",
+    y == "1"	~ "P. Legislativo",
+    y == "2"	~ "OPR",
+    y == "3"	~ "P. Judicial",
+    y == "4"	~ "Segob",
+    y == "5"	~ "SRE",
+    y == "6"	~ "SHCP",
+    y == "7"	~ "Sedena",
+    y == "8"	~ "Sader",
+    y == "9"	~ "SICT",
+    y == "10"	~ "SE",
+    y == "11"	~ "SEP",
+    y == "12"	~ "SSA",
+    y == "13"	~ "Semar",
+    y == "14"	~ "STPS",
+    y == "15"	~ "Sedatu",
+    y == "16"	~ "Semarnat",
+    y == "17"	~ "PGR",
+    y == "18"	~ "Sener",
+    y == "19"	~ "Aport. a la SS.",
+    y == "20"	~ "Bienestar",
+    y == "21"	~ "Sectur",
+    y == "22"	~ "INE",
+    y == "23"	~ "Prov. Salariales y Econ.",
+    y == "24"	~ "Deuda P\u00fablica",
+    y == "25"	~ "Prev. y Aport. a la Educ.",
+    y == "27"	~ "SFP",
+    y == "28"	~ "Participaciones Fed. para Ent. y Mun.",
+    y == "30"	~ "Adefas",
+    y == "31"	~ "Trib. Agra.",
+    y == "32"	~ "TFJA",
+    y == "33"	~ "Aportaciones Fed. para Ent. y Mun.",
+    y == "34"	~ "Erog. para Prog. de Apoyo a Ahorradores y Deudores de la Banca",
+    y == "35"	~ "CNDH",
+    y == "36"	~ "SSPC",
+    y == "37"	~ "CJEF",
+    y == "38"	~ "Conacyt",
+    y == "40"	~ "INEGI",
+    y == "41"	~ "Cofece",
+    y == "42"	~ "INEE",
+    y == "43"	~ "IFT",
+    y == "44"	~ "INAI",
+    y == "45"	~ "CRE",
+    y == "46"	~ "CNH",
+    y == "47"	~ "Ent. no sect.",
+    y == "48"	~ "Cultura",
+    y == "49"	~ "FGR",
+    y == "50"	~ "IMSS",
+    y == "GYR" ~ "IMSS",
+    y == "51"	~ "ISSSTE",
+    y == "GYN" ~ "ISSSTE",
+    y == "52"	~ "Pemex",
+    y == "TZZ" ~ "Pemex",
+    y == "53"	~ "CFE",
+    y == "TOQ" ~	"CFE",
     T ~ NA_character_
   )
 }
@@ -1627,9 +1648,9 @@ desc_ramo_to_abr_ramo <- function(desc_ramo) {
     stringr::str_detect(y, "HACIENDA") ~ "SHCP",
     stringr::str_detect(y, "DEFENSA") ~ "Sedena",
     stringr::str_detect(y, "AGRICULTURA Y DESARROLLO RURAL") ~ "Sader",
-    stringr::str_detect(y, "COMUNICACIONES Y TRANSPORTES") ~ "SCT",
+    stringr::str_detect(y, "COMUNICACIONES Y TRANSPORTES") ~ "SICT",
     stringr::str_detect(y, "ECONOMIA") ~ "SE",
-    stringr::str_detect(y, "EDUCACION") ~ "SEP",
+    stringr::str_detect(y, "EDUCACION PUBLICA") ~ "SEP",
     stringr::str_detect(y, "SALUD") ~ "SSA",
     stringr::str_detect(y, "MARINA") ~ "Semar",
     stringr::str_detect(y, "TRABAJO Y PREVISION SOCIAL") ~ "STPS",
@@ -2004,7 +2025,8 @@ gen_subclas_eco <- function (.x,
 
     }
 
-  }
+}
+
 
 #' Datos del deflactor de TP
 #'
@@ -2024,9 +2046,19 @@ gen_subclas_eco <- function (.x,
 #' @source Datos del deflactor del PIB de la SHCP disponibles en los Lineamientos para la Integración de la Cuenta Pública 2021 (https://www.cuentapublica.hacienda.gob.mx/es/CP/cuenta)
 "CP2021"
 
+#' Datos del deflactor utilizados en la CP de 2022
+#'
+#' Son los datos del deflactor implícito del PIB, observados y estimados
+#' de la SHCP.
+#'
+#' @format Data Frame
+#' @source Datos del deflactor del PIB de la SHCP disponibles en los Lineamientos para la Integración de la Cuenta Pública 2022 (https://www.cuentapublica.hacienda.gob.mx/es/CP/cuenta)
+"CP2022"
+
 globalVariables(c(".", "deflactor_local", "periodo",
                   "n", "id", "inpc_bd",
                   "year", "sp1", "deflactor_year",
+                  "CP2021", "CP2022", 
                   "deflactor_desc", "clasif_eco", "id_ramo",
                   "ciclo", "id_capitulo", "id_objeto_del_gasto",
                   "id_concepto", "id_partida_especifica", "id_partida_generica",
@@ -2038,3 +2070,8 @@ globalVariables(c(".", "deflactor_local", "periodo",
                   "monto_modif_mes", "monto_modificado_mensual", "desc_objeto_del_gasto",
                   "monto_aprobado_mensual", "desc_ramo",
                   "inpc_bd"))
+
+
+
+
+

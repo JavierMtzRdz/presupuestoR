@@ -7,7 +7,7 @@
 cve_to_ent(cve_ent)
 }
 \arguments{
-\item{cve_ent}{Nombre de una entidad}
+\item{cve_ent}{Clave de entidad}
 }
 \value{
 un vector de caracteres de tamaño 3 de entidades de México no

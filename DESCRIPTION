@@ -26,5 +26,13 @@ Imports:
     xml2,
     banxicoR
 Suggests:
-    dplyr
-RoxygenNote: 7.2.3
+    dplyr,
+    knitr,
+    rmarkdown,
+    ggplot2,
+    gapminder,
+    lubridate,
+    testthat
+RoxygenNote: 7.3.1
+VignetteBuilder: knitr
+Config/rextendr/version: 0.3.1

@@ -2,24 +2,162 @@
 % Please edit documentation in R/statistic_tools.R
 \name{indexing}
 \alias{indexing}
-\title{Indexar o reindexar}
+\title{Indexing a Series}
 \usage{
-indexing(.x, col_from, col_to = index, ..., n_base = 100)
+indexing(.x, col_from, ..., col_to = index, n_base = 100)
 }
 \arguments{
-\item{.x}{Base de datos tidy}
+\item{.x}{Tidy dataset.}
 
-\item{col_from}{Columna que se va a indexar}
+\item{col_from}{Column containing the numeric variable to be indexed.}
 
-\item{col_to}{Colúmna que se va a generar con el resultado}
+\item{...}{Components to select the base observation(s).}
 
-\item{...}{Componentes a filtrar}
+\item{col_to}{Column to store the result (default is 'index').}
 
-\item{n_base}{Base del índice}
+\item{n_base}{Base value for the index (default is 100).}
 }
 \value{
-Regresa la base de datos con la colúmna con el índice
+Returns the tidy dataset with the indexed column
 }
 \description{
-Esa función genera un índice a partir de cierto periodo base.
+The `indexing()` function enables the creation of an index from a numeric variable,
+using specified observations as reference points.
+}
+\examples{
+# Example 1: ---------------------------------------------------------------------
+# In this example, the function generated a time series and established an
+# index using the `values` column. The base observation is set at
+# `2023-01-01`.
+
+## Load packages
+library(dplyr)
+library(ggplot2)
+
+## Generating toy dataset
+set.seed(545)
+
+df <- data.frame(date = seq(as.Date("2023-01-01"),
+                        as.Date("2025-12-01"),
+                        "month"),
+             values = runif(12*3, 50, 150)*
+               (2 + cumsum(runif(12*3, 0, 0.15))))
+
+head(df)
+
+#> # A tibble: 6 × 2
+#>   date       values
+#>   <date>      <dbl>
+#> 1 2023-01-01   283.
+#> 2 2023-02-01   129.
+#> 3 2023-03-01   235.
+#> 4 2023-04-01   298.
+#> 5 2023-05-01   189.
+#> 6 2023-06-01   354.
+
+## Index generation
+
+df2 <- indexing(df,
+                values,
+                date == as.Date("2023-01-01"))
+
+head(df2)
+
+#> # A tibble: 6 × 3
+#>   date       values index
+#>   <date>      <dbl> <dbl>
+#> 1 2023-01-01   283. 100
+#> 2 2023-02-01   129.  45.6
+#> 3 2023-03-01   235.  83.2
+#> 4 2023-04-01   298. 105.
+#> 5 2023-05-01   189.  66.8
+#> 6 2023-06-01   354. 125.
+
+# Comparing original variable vs. indexed variable.
+
+df2 \%>\%
+  ggplot(aes(x = date)) +
+  geom_hline(yintercept = 100,
+             linetype = "dashed") +
+  geom_line(aes(y = values,
+                color = "values")) +
+  geom_line(aes(y = index,
+                color = "index")) +
+  theme_minimal()
+
+# Example 3: ---------------------------------------------------------------------
+# Using the toy dataset from earlier, this code chunk generates an indexed
+# variable taking the average values of multiple observations as reference.
+# Specifically, it computes the average for the year 2023. A warning is issued
+# in case this operation was not intended.
+
+## Index generation
+
+df2 <- indexing(df,
+                values,
+                lubridate::year(date) == 2023)
+
+#> Warning: More than one row is being used as a reference.
+
+head(df2)
+
+## Comparing original variable vs. indexed variable.
+
+#> # A tibble: 6 × 3
+#>   date       values index
+#>   <date>      <dbl> <dbl>
+#> 1 2023-01-01   283. 116.
+#> 2 2023-02-01   129.  52.7
+#> 3 2023-03-01   235.  96.3
+#> 4 2023-04-01   298. 122.
+#> 5 2023-05-01   189.  77.3
+#> 6 2023-06-01   354. 145.
+
+# Comparing original variable vs. indexed variable.
+df2 \%>\%
+  ggplot(aes(x = date)) +
+  geom_hline(yintercept = 100,
+             linetype = "dashed") +
+  geom_line(aes(y = values,
+                color = "values")) +
+  geom_line(aes(y = index,
+                color = "index")) +
+  theme_minimal()
+
+# Example 3: ---------------------------------------------------------------------
+# In this section, we indexed the GDP per capita for Oceania countries taking
+# the year 1952 as the base.
+
+
+## Grouped index generation
+
+library(gapminder)
+
+idx_gap <- gapminder::gapminder \%>\%
+  filter(continent == "Oceania") \%>\%
+  group_by(country) \%>\%
+  indexing(gdpPercap,
+           year == 1952)
+
+head(idx_gap)
+
+#> # A tibble: 6 × 7
+#> # Groups:   country [1]
+#>   country   continent  year lifeExp      pop gdpPercap index
+#>   <fct>     <fct>     <int>   <dbl>    <int>     <dbl> <dbl>
+#> 1 Australia Oceania    1952    69.1  8691212    10040.  100
+#> 2 Australia Oceania    1957    70.3  9712569    10950.  109.
+#> 3 Australia Oceania    1962    70.9 10794968    12217.  122.
+#> 4 Australia Oceania    1967    71.1 11872264    14526.  145.
+#> 5 Australia Oceania    1972    71.9 13177000    16789.  167.
+#> 6 Australia Oceania    1977    73.5 14074100    18334.  183.
+
+## Ploting generated index
+idx_gap \%>\%
+  ggplot2::ggplot(aes(x = year,
+             y = index,
+             color = country)) +
+  geom_line() +
+  theme_minimal()
+
 }
