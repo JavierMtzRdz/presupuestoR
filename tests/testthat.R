@@ -7,8 +7,8 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(indexing)
+library(presupuestoR)
 library(magrittr)
 library(lubridate)
 
-test_check("indexing")
+test_check("presupuestoR")
